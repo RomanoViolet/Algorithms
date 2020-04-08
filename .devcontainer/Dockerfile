@@ -33,6 +33,7 @@ RUN \
   apt-get install -qqy net-tools && \
   apt-get install -qqy wget && \
   apt-get install -qqy unzip && \
+  apt-get install -qqy git && \
   add-apt-repository ppa:openjdk-r/ppa && \
   apt-get -qqy update && \
   apt-get install -qqy openjdk-11-jdk && \
