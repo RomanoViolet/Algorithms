@@ -2,12 +2,12 @@ import java.sql.Struct;
 
 import edu.princeton.cs.algs4.StdRandom;
 import edu.princeton.cs.algs4.StdStats;
+import edu.princeton.cs.algs4.UF;
 import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 
 public class Percolation {
 
     private int _n = 0;
-    private int _latticeID = 0;
     Tree _tree;
 
     public class AddressType {
@@ -26,29 +26,75 @@ public class Percolation {
             }
 
             boolean _isOpen = false;
-            AddressType _myRoot = new AddressType();
+            boolean _isOccupied = false;
 
         }
 
         Tree(int n) {
-            _grid = new CellType[n][n];
+            this._grid = new CellType[n][n];
+
+            // n*n cells as required by the matrix. nth cell as special "start" cell,
+            // (n+1)th cell as special "stop" cell.
+            this._uf = new UF(n * n + 2);
+            this._n = n;
         }
 
         void openACell(int row, int col) {
-            this._grid[row - 1][col - 1]._isOpen = true;
+            this._grid[row][col]._isOpen = true;
             this._totalOpenCells++;
+
+            // connect it to the left cell if it is unblocked
+            if (this.isACellOpen(row, col - 1)) {
+                this._uf.union(this.rowColToIndex(row, col), this.rowColToIndex(row, col - 1));
+            }
+
+            // connect it to the right cell if it is unblocked
+            if (this.isACellOpen(row, col + 1)) {
+                this._uf.union(this.rowColToIndex(row, col), this.rowColToIndex(row, col + 1));
+            }
+
+            // connect it to the top cell if it is unblocked
+            if (this.isACellOpen(row - 1, col)) {
+                this._uf.union(this.rowColToIndex(row, col), this.rowColToIndex(row - 1, col));
+            }
+
+            // connect it to the bottom cell if it is unblocked
+            if (this.isACellOpen(row + 1, col)) {
+                this._uf.union(this.rowColToIndex(row, col), this.rowColToIndex(row + 1, col));
+            }
+
+            // if this is a cell on the top row, connect it to the special "start" cell
+            if (row == 0) {
+                this._uf.union(this._n * this._n, this.rowColToIndex(row, col));
+            }
+
+            // if this is a cell on the bottom row, connect it to the special "end" cell
+            if (row == this._n - 1) {
+                this._uf.union((this._n * this._n) + 1, this.rowColToIndex(row, col));
+            }
         }
 
         boolean isACellOpen(int row, int col) {
-            return (this._grid[row - 1][col - 1]._isOpen);
+            return (this._grid[row][col]._isOpen);
+        }
+
+        boolean isACellOccupied(int row, int col) {
+            return (this._grid[row][col]._isOccupied);
         }
 
         int totalOpenCells() {
             return (this._totalOpenCells);
         }
 
+        // private helpers
+        int rowColToIndex(int row, int col) {
+            return (((row - 1) * this._n) + (col - 1));
+        }
+
         private CellType[][] _grid;
         private int _totalOpenCells = 0;
+        private UF _uf;
+        private int _n = 0;
 
     }
 
@@ -70,7 +116,7 @@ public class Percolation {
             throw new IllegalArgumentException("Requested (row, column) address out of bounds.");
         }
 
-        this._tree.openACell(row, col);
+        this._tree.openACell(row - 1, col - 1);
 
     }
 
@@ -79,7 +125,7 @@ public class Percolation {
         if ((row > this._n) || (col > this._n)) {
             throw new IllegalArgumentException("Requested (row, column) address out of bounds.");
         }
-        return this._tree.isACellOpen(row, col);
+        return this._tree.isACellOpen(row - 1, col - 1);
 
     }
 
@@ -88,7 +134,7 @@ public class Percolation {
         if ((row > this._n) || (col > this._n)) {
             throw new IllegalArgumentException("Requested (row, column) address out of bounds.");
         }
-        return (!isOpen(row, col));
+        return (this._tree.isACellOccupied(row - 1, col - 1));
     }
 
     // returns the number of open sites
@@ -100,8 +146,6 @@ public class Percolation {
     public boolean percolates() {
         return false;
     }
-
-    // private helpers
 
     // test client (optional)
     public static void main(String[] args) {
