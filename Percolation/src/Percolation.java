@@ -86,6 +86,12 @@ public class Percolation {
             return (this._totalOpenCells);
         }
 
+        boolean areEndsConnected() {
+            int p = this._n * this._n;
+            int q = p + 1;
+            return (this._uf.find(p) == this._uf.find(q));
+        }
+
         // private helpers
         int rowColToIndex(int row, int col) {
             return (((row - 1) * this._n) + (col - 1));
@@ -144,7 +150,7 @@ public class Percolation {
 
     // does the system percolate?
     public boolean percolates() {
-        return false;
+        return (this._tree.areEndsConnected());
     }
 
     // test client (optional)
