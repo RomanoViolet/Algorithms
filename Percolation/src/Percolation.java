@@ -173,7 +173,8 @@ public class Percolation {
     // run one experiment for percolate.
     public static double runPercolate(int gridSize) {
         double ratioOfOpenSites = 0;
-        long seed = StdRandom.getSeed();
+        // long seed = StdRandom.getSeed();
+        long seed = System.currentTimeMillis();
         StdRandom.setSeed(seed);
         Percolation p = new Percolation(gridSize);
         AddressType a;
@@ -198,7 +199,7 @@ public class Percolation {
         }
 
         ratioOfOpenSites = p._tree.totalOpenCells() / ((double) p._n * p._n);
-
+        // System.out.println("Ratio: " + ratioOfOpenSites);
         return ratioOfOpenSites;
     }
 
