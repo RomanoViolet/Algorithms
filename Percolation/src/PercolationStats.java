@@ -5,20 +5,20 @@ import edu.princeton.cs.algs4.StdRandom;
 public class PercolationStats {
 
     private final double[] ratios;
-    private final int _trials;
-    private final int _n;
+    private final int trials;
+    private final int n;
 
     // constructor
     public PercolationStats(int n, int trials) {
         ratios = new double[trials];
-        _trials = trials;
-        _n = n;
+        this.trials = trials;
+        this.n = n;
         for (int trialNumber = 0; trialNumber < trials; ++trialNumber) {
             // ratios[trialNumber] = Percolation.runPercolate(n);
             double ratioOfOpenSites = 0;
             Percolation p = new Percolation(n);
             int siteTobeUnblocked = 0;
-            while (p.percolates() == false) {
+            while (!p.percolates()) {
                 // choose a random site
                 siteTobeUnblocked = StdRandom.uniform(n * n);
 
@@ -27,14 +27,14 @@ public class PercolationStats {
                 a = this.indexToRowColumn(siteTobeUnblocked);
 
                 // if this is already open, then continue to the next round
-                if (!p.isOpen(a._row, a._column)) {
-                    p.open(a._row, a._column);
+                if (!p.isOpen(a.row, a.column)) {
+                    p.open(a.row, a.column);
                 } else {
                     continue;
                 }
 
                 // System.out.println("Opened cells: " + p._tree.totalOpenCells() + " of " +
-                // (p._n * p._n));
+                // (p.n * p.n));
             }
 
             ratioOfOpenSites = p.numberOfOpenSites() / ((double) n * n);
@@ -44,21 +44,23 @@ public class PercolationStats {
     }
 
     private class AddressType {
+
+        int row = 0;
+        int column = 0;
+
         AddressType() {
-            _row = 0;
-            _column = 0;
+            row = 0;
+            column = 0;
         }
 
-        int _row = 0;
-        int _column = 0;
     }
 
     private AddressType indexToRowColumn(int index) {
         AddressType a = new AddressType();
 
         // since in the setup rows start with 1.
-        a._row = (index / this._n) + 1;
-        a._column = index - (((a._row - 1) * this._n)) + 1;
+        a.row = (index / this.n) + 1;
+        a.column = index - (((a.row - 1) * this.n)) + 1;
 
         return (a);
     }
@@ -72,16 +74,16 @@ public class PercolationStats {
     }
 
     public double confidenceLo() {
-        return (this.mean() - (1.96 * this.stddev()) / (Math.sqrt(this._trials)));
+        return (this.mean() - (1.96 * this.stddev()) / (Math.sqrt(this.trials)));
     }
 
     public double confidenceHi() {
-        return (this.mean() + (1.96 * this.stddev()) / (Math.sqrt(this._trials)));
+        return (this.mean() + (1.96 * this.stddev()) / (Math.sqrt(this.trials)));
     }
 
     // test client (optional)
     public static void main(String[] args) {
-        int gridSizes[] = { 20, 40, 80, 160, 320, 640 };
+        int[] gridSizes = { 20, 40, 80, 160, 320, 640 };
         int nTrials = 100;
         for (int thisGridSize : gridSizes) {
             Stopwatch timer = new Stopwatch();
