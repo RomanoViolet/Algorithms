@@ -1,5 +1,3 @@
-import java.sql.Struct;
-
 import edu.princeton.cs.algs4.StdRandom;
 import edu.princeton.cs.algs4.StdStats;
 import edu.princeton.cs.algs4.UF;
@@ -25,18 +23,27 @@ public class Percolation {
             CellType() {
             }
 
-            boolean _isOpen = false;
-            boolean _isOccupied = false;
+            public boolean _isOpen = false;
+            public boolean _isOccupied = false;
 
         }
 
         Tree(int n) {
+            // declare
             this._grid = new CellType[n][n];
+
+            // initialize
+            for (int row = 0; row < n; ++row) {
+                for (int col = 0; col < n; ++col) {
+                    this._grid[row][col] = new CellType();
+                }
+            }
 
             // n*n cells as required by the matrix. nth cell as special "start" cell,
             // (n+1)th cell as special "stop" cell.
-            this._uf = new UF(n * n + 2);
+            this._uf = new WeightedQuickUnionUF(n * n + 2);
             this._n = n;
+
         }
 
         void openACell(int row, int col) {
@@ -44,22 +51,22 @@ public class Percolation {
             this._totalOpenCells++;
 
             // connect it to the left cell if it is unblocked
-            if (this.isACellOpen(row, col - 1)) {
+            if ((col - 1 >= 0) && (this.isACellOpen(row, col - 1))) {
                 this._uf.union(this.rowColToIndex(row, col), this.rowColToIndex(row, col - 1));
             }
 
             // connect it to the right cell if it is unblocked
-            if (this.isACellOpen(row, col + 1)) {
+            if ((col + 1 <= this._n - 1) && (this.isACellOpen(row, col + 1))) {
                 this._uf.union(this.rowColToIndex(row, col), this.rowColToIndex(row, col + 1));
             }
 
             // connect it to the top cell if it is unblocked
-            if (this.isACellOpen(row - 1, col)) {
+            if ((row - 1 >= 0) && (this.isACellOpen(row - 1, col))) {
                 this._uf.union(this.rowColToIndex(row, col), this.rowColToIndex(row - 1, col));
             }
 
             // connect it to the bottom cell if it is unblocked
-            if (this.isACellOpen(row + 1, col)) {
+            if ((row + 1 <= this._n - 1) && (this.isACellOpen(row + 1, col))) {
                 this._uf.union(this.rowColToIndex(row, col), this.rowColToIndex(row + 1, col));
             }
 
@@ -94,12 +101,22 @@ public class Percolation {
 
         // private helpers
         int rowColToIndex(int row, int col) {
-            return (((row - 1) * this._n) + (col - 1));
+            return (((row) * this._n) + (col));
+        }
+
+        public AddressType indexToRowColumn(int index) {
+            AddressType a = new AddressType();
+
+            // since in the setup rows start with 1.
+            a._row = (index / this._n) + 1;
+            a._column = index - (((a._row - 1) * this._n)) + 1;
+
+            return (a);
         }
 
         private CellType[][] _grid;
         private int _totalOpenCells = 0;
-        private UF _uf;
+        private WeightedQuickUnionUF _uf;
         private int _n = 0;
 
     }
@@ -153,9 +170,42 @@ public class Percolation {
         return (this._tree.areEndsConnected());
     }
 
+    // run one experiment for percolate.
+    public static double runPercolate(int gridSize) {
+        double ratioOfOpenSites = 0;
+        long seed = StdRandom.getSeed();
+        StdRandom.setSeed(seed);
+        Percolation p = new Percolation(gridSize);
+        AddressType a;
+        int siteTobeUnblocked = 0;
+        while (p.percolates() == false) {
+            // choose a random site
+            siteTobeUnblocked = StdRandom.uniform(p._n * p._n);
+            // System.out.println("Opening site: " + siteTobeUnblocked);
+            // convert to row-column format
+            a = p._tree.indexToRowColumn(siteTobeUnblocked);
+
+            // if this is already open, then continue to the next round
+
+            if (!p._tree.isACellOpen(a._row - 1, a._column - 1)) {
+                p._tree.openACell(a._row - 1, a._column - 1);
+            } else {
+                continue;
+            }
+
+            // System.out.println("Opened cells: " + p._tree.totalOpenCells() + " of " +
+            // (p._n * p._n));
+        }
+
+        ratioOfOpenSites = p._tree.totalOpenCells() / ((double) p._n * p._n);
+
+        return ratioOfOpenSites;
+    }
+
     // test client (optional)
     public static void main(String[] args) {
-        Percolation p = new Percolation(-1);
+        double ratio = Percolation.runPercolate(100);
+        System.out.println("Ratio: " + ratio);
     }
 
 }
