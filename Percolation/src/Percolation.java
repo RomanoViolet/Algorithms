@@ -32,6 +32,10 @@ public class Percolation {
             CellType() {
             }
 
+            public boolean isOpen() {
+                return (this.isOpen);
+            }
+
             public void open() {
                 this.isOpen = true;
             }
@@ -57,6 +61,11 @@ public class Percolation {
         }
 
         void openACell(int row, int col) {
+
+            // do not open an already opened cell.
+            if (this.grid[row][col].isOpen()) {
+                return;
+            }
             this.grid[row][col].open();
             this.totalOpenCells++;
 
@@ -174,7 +183,7 @@ public class Percolation {
     // is the site (row, col) open?
     public boolean isOpen(int row, int col) {
         if ((row > this.n) || (col > this.n)) {
-            throw new ArrayIndexOutOfBoundsException("Requested (row, column) address out of bounds.");
+            throw new IllegalArgumentException("Requested (row, column) address out of bounds.");
         }
         return this.tree.isACellOpen(row - 1, col - 1);
 
@@ -183,7 +192,7 @@ public class Percolation {
     // is the site (row, col) full?
     public boolean isFull(int row, int col) {
         if ((row > this.n) || (col > this.n) || (col < 1) || (row < 1)) {
-            throw new ArrayIndexOutOfBoundsException("Requested (row, column) address out of bounds.");
+            throw new IllegalArgumentException("Requested (row, column) address out of bounds.");
         }
         return (this.tree.isFull(row - 1, col - 1));
     }
