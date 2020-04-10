@@ -1,19 +1,66 @@
 import edu.princeton.cs.algs4.StdStats;
 import edu.princeton.cs.algs4.Stopwatch;
+import edu.princeton.cs.algs4.StdRandom;
 
 public class PercolationStats {
 
-    double[] ratios;
-    int _trials;
+    private final double[] ratios;
+    private final int _trials;
+    private final int _n;
 
     // constructor
     public PercolationStats(int n, int trials) {
         ratios = new double[trials];
         _trials = trials;
+        _n = n;
         for (int trialNumber = 0; trialNumber < trials; ++trialNumber) {
-            ratios[trialNumber] = Percolation.runPercolate(n);
+            // ratios[trialNumber] = Percolation.runPercolate(n);
+            double ratioOfOpenSites = 0;
+            Percolation p = new Percolation(n);
+            int siteTobeUnblocked = 0;
+            while (p.percolates() == false) {
+                // choose a random site
+                siteTobeUnblocked = StdRandom.uniform(n * n);
+
+                // convert to row-column format
+                AddressType a;
+                a = this.indexToRowColumn(siteTobeUnblocked);
+
+                // if this is already open, then continue to the next round
+                if (!p.isOpen(a._row, a._column)) {
+                    p.open(a._row, a._column);
+                } else {
+                    continue;
+                }
+
+                // System.out.println("Opened cells: " + p._tree.totalOpenCells() + " of " +
+                // (p._n * p._n));
+            }
+
+            ratioOfOpenSites = p.numberOfOpenSites() / ((double) n * n);
+            // System.out.println("Ratio: " + ratioOfOpenSites);
+            ratios[trialNumber] = ratioOfOpenSites;
+        }
+    }
+
+    private class AddressType {
+        AddressType() {
+            _row = 0;
+            _column = 0;
         }
 
+        int _row = 0;
+        int _column = 0;
+    }
+
+    private AddressType indexToRowColumn(int index) {
+        AddressType a = new AddressType();
+
+        // since in the setup rows start with 1.
+        a._row = (index / this._n) + 1;
+        a._column = index - (((a._row - 1) * this._n)) + 1;
+
+        return (a);
     }
 
     public double mean() {

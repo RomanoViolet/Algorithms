@@ -5,10 +5,10 @@ import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 
 public class Percolation {
 
-    private int _n = 0;
-    private Tree _tree;
+    private final int _n;
+    private final Tree _tree;
 
-    public class AddressType {
+    private class AddressType {
         AddressType() {
             _row = 0;
             _column = 0;
@@ -18,13 +18,17 @@ public class Percolation {
         int _column = 0;
     }
 
-    public class Tree {
-        public class CellType {
+    private class Tree {
+        private class CellType {
             CellType() {
             }
 
-            public boolean _isOpen = false;
-            public boolean _isOccupied = false;
+            boolean _isOpen = false;
+            boolean _isOccupied = false;
+
+            public void open() {
+                this._isOpen = true;
+            }
 
         }
 
@@ -47,7 +51,7 @@ public class Percolation {
         }
 
         void openACell(int row, int col) {
-            this._grid[row][col]._isOpen = true;
+            this._grid[row][col].open();
             this._totalOpenCells++;
 
             // connect it to the left cell if it is unblocked
@@ -81,8 +85,23 @@ public class Percolation {
             }
         }
 
+        void openACell(int index) {
+
+            AddressType a;
+            a = this.indexToRowColumn(index);
+            this.openACell(a._row - 1, a._column - 1);
+
+        }
+
         boolean isACellOpen(int row, int col) {
             return (this._grid[row][col]._isOpen);
+        }
+
+        boolean isACellOpen(int index) {
+            AddressType a;
+            a = this.indexToRowColumn(index);
+            return (this.isACellOccupied(a._row - 1, a._column - 1));
+
         }
 
         boolean isACellOccupied(int row, int col) {
@@ -114,12 +133,12 @@ public class Percolation {
             return (a);
         }
 
-        private CellType[][] _grid;
-        private int _totalOpenCells = 0;
-        private WeightedQuickUnionUF _uf;
-        private int _n = 0;
+        CellType[][] _grid;
+        int _totalOpenCells = 0;
+        WeightedQuickUnionUF _uf;
+        int _n = 0;
 
-    }
+    } // private class Tree
 
     // creates n-by-n grid, with all sites initially blocked
     public Percolation(int n) {
@@ -171,7 +190,7 @@ public class Percolation {
     }
 
     // run one experiment for percolate.
-    public static double runPercolate(int gridSize) {
+    private static double runPercolate(int gridSize) {
         double ratioOfOpenSites = 0;
         // long seed = StdRandom.getSeed();
         // long seed = System.currentTimeMillis();
