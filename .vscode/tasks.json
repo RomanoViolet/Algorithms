@@ -2,83 +2,80 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "GCC Debug Build",
+            "label": "Compile All Source Files",
             "type": "shell",
             "linux": {
-                "command": "${workspaceFolder}/BuildScripts/Docker/GCC-Debug-Build"
-            },
-            "windows": {
-                "command": "echo Configuration not complete for a Windows system."
+                "command": "${workspaceFolder}/BuildScripts/Java-Compile-All.sh"
             },
             "group": "build",
-            "problemMatcher": [
-                "$gcc"
-            ]
+            "problemMatcher": {
+                "owner": "java",
+                "fileLocation": "absolute",
+                "pattern": {
+                    "regexp": "^(.*):([0-9]+): (error|warning): (.*)$",
+                    "file": 1,
+                    "line": 2,
+                    "severity": 3,
+                    "message": 4
+                }
+            }
         },
         {
-            "label": "GCC Release Build",
+            "label": "Run Spotbugs",
             "type": "shell",
             "linux": {
-                "command": "${workspaceFolder}/BuildScripts/Docker/GCC-Release-Build"
-            },
-            "windows": {
-                "command": "echo Configuration not complete for a Windows system."
+                "command": "${workspaceFolder}/BuildScripts/Run-Spotbugs-All.sh"
             },
             "group": "build",
-            "problemMatcher": [
-                "$gcc"
-            ]
+            "problemMatcher": {
+                "owner": "java",
+                "fileLocation": "absolute",
+                "pattern": {
+                    "regexp": "^(.*):([0-9]+): (error|warning): (.*)$",
+                    "file": 1,
+                    "line": 2,
+                    "severity": 3,
+                    "message": 4
+                }
+            }
         },
         {
-            "label": "LLVM Debug Build",
+            "label": "Run PMD",
             "type": "shell",
             "linux": {
-                "command": "${workspaceFolder}/BuildScripts/Docker/LLVM-Debug-Build"
-            },
-            "windows": {
-                "command": "echo Configuration not complete for a Windows system."
+                "command": "${workspaceFolder}/BuildScripts/Run-PMD-All.sh"
             },
             "group": "build",
-            "problemMatcher": [
-                "$gcc"
-            ]
+            "problemMatcher": {
+                "owner": "java",
+                "fileLocation": "absolute",
+                "pattern": {
+                    "regexp": "^(.*):([0-9]+): (error|warning): (.*)$",
+                    "file": 1,
+                    "line": 2,
+                    "severity": 3,
+                    "message": 4
+                }
+            }
         },
         {
-            "label": "LLVM Release Build",
+            "label": "Run CheckStyle",
             "type": "shell",
             "linux": {
-                "command": "${workspaceFolder}/BuildScripts/Docker/LLVM-Release-Build"
-            },
-            "windows": {
-                "command": "echo Configuration not complete for a Windows system."
+                "command": "${workspaceFolder}/BuildScripts/Run-CheckStyle-All.sh"
             },
             "group": "build",
-            "problemMatcher": [
-                "$gcc"
-            ]
+            "problemMatcher": {
+                "owner": "java",
+                "fileLocation": "absolute",
+                "pattern": {
+                    "regexp": "^(.*):([0-9]+): (error|warning): (.*)$",
+                    "file": 1,
+                    "line": 2,
+                    "severity": 3,
+                    "message": 4
+                }
+            }
         },
-        {
-            "label": "Generate Coverage Report",
-            "type": "shell",
-            "linux": {
-                "command": "${workspaceFolder}/BuildScripts/Docker/Generate-Coverage-from-UnitTests"
-            },
-            "group": "build",
-            "problemMatcher": [
-                "$gcc"
-            ]
-        },
-        {
-            "label": "Echo Environment Variables",
-            "type": "shell",
-            "linux": {
-                "command": "echo",
-                "args": [
-                    "${workspaceFolder}"
-                ],
-            },
-            "group": "build",
-            "problemMatcher": []
-        }
     ]
 }

@@ -6,7 +6,7 @@ import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 public class Percolation {
 
     private int _n = 0;
-    Tree _tree;
+    private Tree _tree;
 
     public class AddressType {
         AddressType() {
@@ -174,8 +174,8 @@ public class Percolation {
     public static double runPercolate(int gridSize) {
         double ratioOfOpenSites = 0;
         // long seed = StdRandom.getSeed();
-        long seed = System.currentTimeMillis();
-        StdRandom.setSeed(seed);
+        // long seed = System.currentTimeMillis();
+        // StdRandom.setSeed(seed);
         Percolation p = new Percolation(gridSize);
         AddressType a;
         int siteTobeUnblocked = 0;
