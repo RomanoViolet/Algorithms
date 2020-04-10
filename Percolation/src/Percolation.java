@@ -91,6 +91,13 @@ public class Percolation {
             }
         }
 
+        boolean isFull(int row, int col) {
+            // row and column start at 0.
+            int p = this.rowColToIndex(row, col);
+            int q = this.n * this.n;
+            return (this.uf.find(p) == this.uf.find(q));
+        }
+
         void openACell(int index) {
 
             AddressType a;
@@ -126,6 +133,7 @@ public class Percolation {
 
         // private helpers
         int rowColToIndex(int row, int col) {
+            // indices start at 0.
             return (((row) * this.n) + (col));
         }
 
@@ -156,7 +164,7 @@ public class Percolation {
         // prescribed range
         // In the problem indices start from 1.
         if ((row > this.n) || (col > this.n)) {
-            throw new IllegalArgumentException("Requested (row, column) address out of bounds.");
+            throw new ArrayIndexOutOfBoundsException("Requested (row, column) address out of bounds.");
         }
 
         this.tree.openACell(row - 1, col - 1);
@@ -166,7 +174,7 @@ public class Percolation {
     // is the site (row, col) open?
     public boolean isOpen(int row, int col) {
         if ((row > this.n) || (col > this.n)) {
-            throw new IllegalArgumentException("Requested (row, column) address out of bounds.");
+            throw new ArrayIndexOutOfBoundsException("Requested (row, column) address out of bounds.");
         }
         return this.tree.isACellOpen(row - 1, col - 1);
 
@@ -174,10 +182,10 @@ public class Percolation {
 
     // is the site (row, col) full?
     public boolean isFull(int row, int col) {
-        if ((row > this.n) || (col > this.n)) {
-            throw new IllegalArgumentException("Requested (row, column) address out of bounds.");
+        if ((row > this.n) || (col > this.n) || (col < 1) || (row < 1)) {
+            throw new ArrayIndexOutOfBoundsException("Requested (row, column) address out of bounds.");
         }
-        return (this.tree.isACellOccupied(row - 1, col - 1));
+        return (this.tree.isFull(row - 1, col - 1));
     }
 
     // returns the number of open sites
