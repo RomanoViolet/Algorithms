@@ -1,0 +1,19 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - PercolationStats",
+            "request": "launch",
+            "mainClass": "PercolationStats",
+            "projectName": "Percolation"
+        },
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - Percolation",
+            "request": "launch",
+            "mainClass": "Percolation",
+            "projectName": "Percolation"
+        }
+    ]
+}
