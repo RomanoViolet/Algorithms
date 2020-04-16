@@ -7,20 +7,6 @@
             "request": "launch",
             "mainClass": "Deque",
             "projectName": "Percolation"
-        },
-        {
-            "type": "java",
-            "name": "CodeLens (Launch) - PercolationStats",
-            "request": "launch",
-            "mainClass": "PercolationStats",
-            "projectName": "Percolation"
-        },
-        {
-            "type": "java",
-            "name": "CodeLens (Launch) - Percolation",
-            "request": "launch",
-            "mainClass": "Percolation",
-            "projectName": "Percolation"
         }
     ]
 }

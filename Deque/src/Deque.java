@@ -10,7 +10,8 @@ public class Deque<T> implements Iterable<T> {
     // helper linked list class
     private class Node {
         private T item = null;
-        private Node next = null;
+        private Node nextTowardsTail = null;
+        private Node nextTowardsHead = null;
     }
 
     private Node head = null;
@@ -45,9 +46,10 @@ public class Deque<T> implements Iterable<T> {
         Node newHead = new Node();
         newHead.item = item;
 
-        // linkage: A <-- B <-- C <-- head <-- newHead
+        // linkage: tail <-- A <-- B <-- C <-- (old)head <-- newHead
         // newhead.next should point to (old)head
-        newHead.next = this.head;
+        // direction of links: from head towards tail.
+        newHead.nextTowardsTail = this.head;
 
         // mark the new head.
         this.head = newHead;
@@ -56,10 +58,18 @@ public class Deque<T> implements Iterable<T> {
         // the head as head and tail are now valid nodes.
         if (this.size == 0) {
             this.tail = this.head;
+            // next element are still null
         }
 
         // increment size.
         this.size++;
+
+        // if we have now two elements, next elements can have values
+        // direction of links: from tail towards head.
+        // tail --> head
+        if (this.size >= 2) {
+            this.head.nextTowardsTail.nextTowardsHead = this.head;
+        }
     }
 
     // add the item to the back
@@ -73,7 +83,7 @@ public class Deque<T> implements Iterable<T> {
         newTail.item = item;
 
         // linkage: newTail --> (old)Tail --> A --> B -->C ...
-        newTail.next = this.tail;
+        newTail.nextTowardsHead = this.tail;
 
         // mark the new tail
         this.tail = newTail;
@@ -81,6 +91,8 @@ public class Deque<T> implements Iterable<T> {
         // increment the size
         this.size++;
 
+        // make head-to-tail link as well from Tail <-- A (old tail)
+        this.tail.nextTowardsHead.nextTowardsTail = this.tail;
     }
 
     // remove and return the item from the front
@@ -94,7 +106,10 @@ public class Deque<T> implements Iterable<T> {
         T returnValue = this.head.item;
 
         // Move the head back
-        this.head = this.head.next;
+        this.head = this.head.nextTowardsTail;
+
+        // there is no head to point to from the new head
+        this.head.nextTowardsHead = null;
 
         // decrement the size
         this.size--;
@@ -123,7 +138,10 @@ public class Deque<T> implements Iterable<T> {
             this.tail = null;
         } else {
             // deque had a minimum of 2 elements before the current decrement.
-            this.tail = this.tail.next;
+            this.tail = this.tail.nextTowardsHead;
+
+            // there is no tail to point towards from the new tail
+            this.tail.nextTowardsTail = null;
         }
 
         return (returnValue);
@@ -157,7 +175,7 @@ public class Deque<T> implements Iterable<T> {
             }
 
             T result = currentNode.item;
-            currentNode = currentNode.next;
+            currentNode = currentNode.nextTowardsTail;
             return (result);
         }
 
@@ -182,6 +200,33 @@ public class Deque<T> implements Iterable<T> {
         d.addFirst(6);
 
         assert d.size() == 3 : "Error: Increment of size incorrect";
+
+        int result = d.removeFirst();
+        assert result == 6 : "Error: Head is not correct";
+
+        result = d.removeLast();
+        assert result == 4 : "Error: Tail is not correct";
+
+        assert d.size() == 1 : "Error: Deque is not of the correct size";
+
+        for (int i : d) {
+            assert i == 5 : "Incorrect content of the deque";
+        }
+
+        assert d.size() == 1 : "Iterator unexpectedly changed the size of the deque";
+
+        d.addFirst(7);
+        d.addLast(3);
+
+        int[] expectedResponse = { 7, 5, 3 };
+        int[] actualResponse = new int[3];
+        int count = 0;
+        for (int i : d) {
+            actualResponse[count] = i;
+            count++;
+        }
+
+        assert expectedResponse == actualResponse : "Deque items not equal";
 
     }
 
