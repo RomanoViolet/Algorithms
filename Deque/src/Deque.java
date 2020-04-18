@@ -116,10 +116,18 @@ public class Deque<Item> implements Iterable<Item> {
         this.head = this.head.nextTowardsTail;
 
         // there is no head to point to from the new head
-        this.head.nextTowardsHead = null;
+        if (this.head != null) {
+            this.head.nextTowardsHead = null;
+        }
 
         // decrement the size
         this.size--;
+
+        // if this remove step empties the deque
+        if (this.size == 0) {
+            this.head = null;
+            this.tail = null;
+        }
 
         // return the value
         return (returnValue);
@@ -240,6 +248,30 @@ public class Deque<Item> implements Iterable<Item> {
             assert expectedResponse[count] == i : "Incorrect content of the deque";
             count++;
         }
+
+        Deque<Integer> deque = new Deque<Integer>();
+        deque.addFirst(1);
+        deque.removeFirst();
+
+        Deque<Integer> deque_2 = new Deque<Integer>();
+        deque_2.addLast(1);
+        deque_2.removeLast();
+
+        Deque<Integer> deque_3 = new Deque<Integer>();
+        deque_3.addLast(1);
+        deque_3.removeFirst();
+
+        Deque<Integer> deque_4 = new Deque<Integer>();
+        deque_4.addLast(1);
+        deque_4.removeFirst();
+        deque_4.addLast(2);
+        assert deque_4.removeLast() == 2 : "Deque removeLast failed";
+
+        Deque<Integer> deque_5 = new Deque<Integer>();
+        deque_5.addLast(1);
+        deque_5.removeFirst();
+        deque_5.addLast(2);
+        assert deque_5.removeFirst() == 2 : "Deque removeFirst failed";
 
     }
 
