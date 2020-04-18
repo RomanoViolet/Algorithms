@@ -66,7 +66,7 @@ public class RandomizedQueue<T> implements Iterable<T> {
         // Princeton does not allow suppression of this warning. Dammit.
         // @SuppressWarnings("unchecked")
         T[] smallerArray = (T[]) new Object[this.internalArray.length / 2];
-        for (int i = 0; i < this.internalArray.length; ++i) {
+        for (int i = 0; i < this.numberOfElementsInArray; ++i) {
             smallerArray[i] = this.internalArray[i];
         }
 
@@ -93,10 +93,10 @@ public class RandomizedQueue<T> implements Iterable<T> {
         // switch contents at location siteTobeUnblocked with the end of the array
         // (this.numberOfElementsInArray). That is, bubble the gap due to withdrawn
         // element to the top of the array
-        this.internalArray[siteTobeUnblocked] = this.internalArray[this.numberOfElementsInArray];
+        this.internalArray[siteTobeUnblocked] = this.internalArray[this.numberOfElementsInArray - 1];
 
         // now mark the top of the array as empty. Let garbage collector do its job
-        this.internalArray[this.numberOfElementsInArray] = null;
+        this.internalArray[this.numberOfElementsInArray - 1] = null;
 
         // decrement the number of elements
         this.numberOfElementsInArray--;
@@ -166,15 +166,19 @@ public class RandomizedQueue<T> implements Iterable<T> {
                 throw new NoSuchElementException("No element remaining.");
             }
 
-            for (int i = 0; i < temporaryArray.length; ++i) {
-                // content is the index of the element
-                temporaryArray[i] = i;
+            // randomization is done only once per iterator creation
+            if (currentIndex == 0) {
+                for (int i = 0; i < temporaryArray.length; ++i) {
+                    // content is the index of the element
+                    temporaryArray[i] = i;
+                }
+
+                // shuffle the array
+                StdRandom.shuffle(temporaryArray);
             }
 
-            // shuffle the array
-            StdRandom.shuffle(temporaryArray);
-
-            T result = RandomizedQueue.this.internalArray[currentIndex];
+            T result = RandomizedQueue.this.internalArray[temporaryArray[currentIndex]];
+            // System.out.println("Returning: " + result);
             currentIndex++;
             return (result);
         }
@@ -183,7 +187,36 @@ public class RandomizedQueue<T> implements Iterable<T> {
 
     // unit testing (required)
     public static void main(String[] args) {
+        RandomizedQueue<Integer> r = new RandomizedQueue<>();
 
+        // Evaluation of the logical expression to false triggers the assert.
+        assert r.isEmpty() : "Randomized Queue is not empty as expected";
+
+        r.enqueue(0);
+        assert r.size() == 1 : "Incorrect number of elements in the randomizedQueue";
+
+        assert r.sample() == 0 : "Content of the randomizedQueue is incorrect";
+
+        for (int i : r) {
+            assert i == 0 : "Content of the randomizedQueue is incorrect";
+        }
+
+        r.enqueue(1);
+        r.enqueue(2);
+        r.enqueue(3);
+        System.out.println("The following two lines should list the contents in a different order");
+
+        for (int i : r) {
+            System.out.printf("%d, ", i);
+        }
+        System.out.println();
+        for (int i : r) {
+            System.out.printf("%d, ", i);
+        }
+        System.out.println();
+
+        System.out.printf("DEQUEUE: %d, %d, %d, %d", r.dequeue(), r.dequeue(), r.dequeue(), r.dequeue());
+        System.out.println();
     }
 
 }

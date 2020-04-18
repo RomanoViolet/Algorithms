@@ -3,6 +3,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "CodeLens (Launch) - RandomizedQueue",
+            "request": "launch",
+            "mainClass": "RandomizedQueue",
+            "projectName": "Percolation"
+        },
+        {
+            "type": "java",
             "name": "CodeLens (Launch) - Deque",
             "request": "launch",
             "mainClass": "Deque",
