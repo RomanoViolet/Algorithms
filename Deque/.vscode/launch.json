@@ -3,6 +3,16 @@
     "configurations": [
         {
             "type": "java",
+            "name": "CodeLens (Launch) - Deque",
+            "request": "launch",
+            "mainClass": "Deque",
+            "projectName": "Percolation",
+            "vmArgs": [
+                "-ea"
+            ]
+        },
+        {
+            "type": "java",
             "name": "CodeLens (Launch) - Permutation (distinct)",
             "request": "launch",
             "mainClass": "Permutation",
@@ -14,7 +24,7 @@
             "name": "CodeLens (Launch) - Permutation (duplicates)",
             "request": "launch",
             "mainClass": "Permutation",
-            "projectName": "Percolation",
+            "projectName": "Deque",
             "args": "8 < ${workspaceFolder}/Tests/duplicates.txt"
         },
         {
@@ -22,14 +32,17 @@
             "name": "CodeLens (Launch) - RandomizedQueue",
             "request": "launch",
             "mainClass": "RandomizedQueue",
-            "projectName": "Percolation"
+            "projectName": "Deque"
         },
         {
             "type": "java",
             "name": "CodeLens (Launch) - Deque",
             "request": "launch",
             "mainClass": "Deque",
-            "projectName": "Percolation"
+            "projectName": "Deque",
+            "vmArgs": [
+                "-ea"
+            ]
         }
     ]
 }

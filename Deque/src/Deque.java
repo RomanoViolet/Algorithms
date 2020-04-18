@@ -5,11 +5,11 @@ import java.util.Iterator;
 // pronounced "deck"
 // exercise: https://www.coursera.org/learn/algorithms-part1/programming/zamjZ/deques-and-randomized-queues
 //
-public class Deque<T> implements Iterable<T> {
+public class Deque<Item> implements Iterable<Item> {
 
     // helper linked list class
     private class Node {
-        private T item = null;
+        private Item item = null;
         private Node nextTowardsTail = null;
         private Node nextTowardsHead = null;
     }
@@ -37,7 +37,7 @@ public class Deque<T> implements Iterable<T> {
     }
 
     // add the item to the front
-    public void addFirst(T item) {
+    public void addFirst(Item item) {
 
         if (item == null) {
             throw new IllegalArgumentException("An argument is required");
@@ -73,7 +73,7 @@ public class Deque<T> implements Iterable<T> {
     }
 
     // add the item to the back
-    public void addLast(T item) {
+    public void addLast(Item item) {
 
         if (item == null) {
             throw new IllegalArgumentException("An argument is required");
@@ -91,19 +91,26 @@ public class Deque<T> implements Iterable<T> {
         // increment the size
         this.size++;
 
-        // make head-to-tail link as well from Tail <-- A (old tail)
-        this.tail.nextTowardsHead.nextTowardsTail = this.tail;
+        // if this is the only element in the dequeue, the head and tail are the same
+        if (this.size == 1) {
+            this.head = this.tail;
+            // links remain null;
+        } else {
+            // make head-to-tail link as well from Tail <-- A (old tail)
+            this.tail.nextTowardsHead.nextTowardsTail = this.tail;
+        }
+
     }
 
     // remove and return the item from the front
-    public T removeFirst() {
+    public Item removeFirst() {
 
         if (isEmpty()) {
             throw new NoSuchElementException("Deque underflow");
         }
 
         // Extract the value of the head.
-        T returnValue = this.head.item;
+        Item returnValue = this.head.item;
 
         // Move the head back
         this.head = this.head.nextTowardsTail;
@@ -120,13 +127,13 @@ public class Deque<T> implements Iterable<T> {
     }
 
     // remove and return the item from the back
-    public T removeLast() {
+    public Item removeLast() {
         if (isEmpty()) {
             throw new NoSuchElementException("Deque underflow");
         }
 
         // Extract the value of the head.
-        T returnValue = this.tail.item;
+        Item returnValue = this.tail.item;
 
         // decrement the size
         this.size--;
@@ -149,11 +156,11 @@ public class Deque<T> implements Iterable<T> {
     }
 
     // return an iterator over items in order from front to back
-    public Iterator<T> iterator() {
+    public Iterator<Item> iterator() {
         return new DequeIterator();
     }
 
-    private class DequeIterator implements Iterator<T> {
+    private class DequeIterator implements Iterator<Item> {
         // see https://stackoverflow.com/a/1816462 for accessing member of the parent
         // class
         private Node currentNode = Deque.this.head;
@@ -169,12 +176,12 @@ public class Deque<T> implements Iterable<T> {
 
         // the actual position of the head must not change.
         // only a removeFirst operation changes the actual position of the head.
-        public T next() {
+        public Item next() {
             if (!hasNext()) {
                 throw new NoSuchElementException();
             }
 
-            T result = currentNode.item;
+            Item result = currentNode.item;
             currentNode = currentNode.nextTowardsTail;
             return (result);
         }
@@ -190,43 +197,49 @@ public class Deque<T> implements Iterable<T> {
 
         assert d.size() == 0 : "Error: Size of the deque is not 0";
 
+        d.addLast(-1);
+
         // insert the first item
         d.addFirst(4);
 
-        assert d.size() == 1 : "Error: Increment of size incorrect";
+        assert d.size() == 2 : "Error: Increment of size incorrect";
         assert !d.isEmpty() : "Error: Deque should not be empty";
 
         d.addFirst(5);
         d.addFirst(6);
+        d.addLast(-2);
 
-        assert d.size() == 3 : "Error: Increment of size incorrect";
+        assert d.size() == 5 : "Error: Increment of size incorrect";
 
         int result = d.removeFirst();
         assert result == 6 : "Error: Head is not correct";
 
         result = d.removeLast();
-        assert result == 4 : "Error: Tail is not correct";
+        assert result == -2 : "Error: Tail is not correct";
 
-        assert d.size() == 1 : "Error: Deque is not of the correct size";
+        assert d.size() == 3 : "Error: Deque is not of the correct size";
 
+        // iterator works head to tail
+        int[] expectedResult = { 5, 4, -1 };
+        int index = 0;
         for (int i : d) {
-            assert i == 5 : "Incorrect content of the deque";
+            assert expectedResult[index] == i : "Incorrect content of the deque";
+            index++;
+
         }
 
-        assert d.size() == 1 : "Iterator unexpectedly changed the size of the deque";
+        assert d.size() == 3 : "Iterator unexpectedly changed the size of the deque";
 
         d.addFirst(7);
         d.addLast(3);
 
-        int[] expectedResponse = { 7, 5, 3 };
-        int[] actualResponse = new int[3];
+        // iterator works head to tail
+        int[] expectedResponse = { 7, 5, 4, -1, 3 };
         int count = 0;
         for (int i : d) {
-            actualResponse[count] = i;
+            assert expectedResponse[count] == i : "Incorrect content of the deque";
             count++;
         }
-
-        assert expectedResponse == actualResponse : "Deque items not equal";
 
     }
 

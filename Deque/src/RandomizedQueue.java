@@ -2,10 +2,10 @@ import edu.princeton.cs.algs4.StdRandom;
 import java.util.NoSuchElementException;
 import java.util.Iterator;
 
-public class RandomizedQueue<T> implements Iterable<T> {
+public class RandomizedQueue<Item> implements Iterable<Item> {
 
     private static final int INITIAL_SIZE_OF_INTERNAL_ARRAY = 1;
-    private T[] internalArray;
+    private Item[] internalArray;
     private int numberOfElementsInArray;
 
     // construct an empty randomized queue
@@ -17,7 +17,7 @@ public class RandomizedQueue<T> implements Iterable<T> {
         //
         // Princeton does not allow suppression of this warning. Dammit.
         // @SuppressWarnings("unchecked")
-        this.internalArray = (T[]) new Object[INITIAL_SIZE_OF_INTERNAL_ARRAY];
+        this.internalArray = (Item[]) new Object[INITIAL_SIZE_OF_INTERNAL_ARRAY];
         numberOfElementsInArray = 0;
     }
 
@@ -36,7 +36,7 @@ public class RandomizedQueue<T> implements Iterable<T> {
 
         // Princeton does not allow suppression of this warning. Dammit.
         // @SuppressWarnings("unchecked")
-        T[] largerArray = (T[]) new Object[2 * this.internalArray.length];
+        Item[] largerArray = (Item[]) new Object[2 * this.internalArray.length];
         for (int i = 0; i < this.internalArray.length; ++i) {
             largerArray[i] = this.internalArray[i];
         }
@@ -49,7 +49,7 @@ public class RandomizedQueue<T> implements Iterable<T> {
     }
 
     // add the item
-    public void enqueue(T item) {
+    public void enqueue(Item item) {
         if (item == null) {
             throw new IllegalArgumentException("An argument is required");
         }
@@ -65,7 +65,7 @@ public class RandomizedQueue<T> implements Iterable<T> {
 
         // Princeton does not allow suppression of this warning. Dammit.
         // @SuppressWarnings("unchecked")
-        T[] smallerArray = (T[]) new Object[this.internalArray.length / 2];
+        Item[] smallerArray = (Item[]) new Object[this.internalArray.length / 2];
         for (int i = 0; i < this.numberOfElementsInArray; ++i) {
             smallerArray[i] = this.internalArray[i];
         }
@@ -77,7 +77,7 @@ public class RandomizedQueue<T> implements Iterable<T> {
     }
 
     // remove and return a random item
-    public T dequeue() {
+    public Item dequeue() {
 
         // is the array empty of elements?
         if (this.numberOfElementsInArray == 0) {
@@ -88,7 +88,7 @@ public class RandomizedQueue<T> implements Iterable<T> {
         int siteTobeUnblocked = StdRandom.uniform(this.numberOfElementsInArray);
 
         // get the item
-        T result = this.internalArray[siteTobeUnblocked];
+        Item result = this.internalArray[siteTobeUnblocked];
 
         // switch contents at location siteTobeUnblocked with the end of the array
         // (this.numberOfElementsInArray). That is, bubble the gap due to withdrawn
@@ -123,7 +123,7 @@ public class RandomizedQueue<T> implements Iterable<T> {
     }
 
     // return a random item (but do not remove it)
-    public T sample() {
+    public Item sample() {
         // is the array empty of elements?
         if (this.numberOfElementsInArray == 0) {
             throw new NoSuchElementException("No elements to sample.");
@@ -133,17 +133,17 @@ public class RandomizedQueue<T> implements Iterable<T> {
         int siteTobeUnblocked = StdRandom.uniform(this.numberOfElementsInArray);
 
         // get the item
-        T result = this.internalArray[siteTobeUnblocked];
+        Item result = this.internalArray[siteTobeUnblocked];
 
         return (result);
     }
 
     // return an independent iterator over items in random order
-    public Iterator<T> iterator() {
+    public Iterator<Item> iterator() {
         return new RandomizedQueueIterator();
     }
 
-    private class RandomizedQueueIterator implements Iterator<T> {
+    private class RandomizedQueueIterator implements Iterator<Item> {
         // https://stackoverflow.com/a/1816462 for accessing member of the parent class
 
         // an array which is as long as number of elements stored
@@ -161,7 +161,7 @@ public class RandomizedQueue<T> implements Iterable<T> {
 
         // the actual position of the head must not change.
         // only a removeFirst operation changes the actual position of the head.
-        public T next() {
+        public Item next() {
             if (!hasNext()) {
                 throw new NoSuchElementException("No element remaining.");
             }
@@ -177,7 +177,7 @@ public class RandomizedQueue<T> implements Iterable<T> {
                 StdRandom.shuffle(temporaryArray);
             }
 
-            T result = RandomizedQueue.this.internalArray[temporaryArray[currentIndex]];
+            Item result = RandomizedQueue.this.internalArray[temporaryArray[currentIndex]];
             // System.out.println("Returning: " + result);
             currentIndex++;
             return (result);
