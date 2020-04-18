@@ -194,7 +194,7 @@ public class Deque<T> implements Iterable<T> {
         d.addFirst(4);
 
         assert d.size() == 1 : "Error: Increment of size incorrect";
-        assert d.isEmpty() == false : "Error: Deque should not be empty";
+        assert !d.isEmpty() : "Error: Deque should not be empty";
 
         d.addFirst(5);
         d.addFirst(6);
