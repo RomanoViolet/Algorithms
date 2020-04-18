@@ -3,6 +3,22 @@
     "configurations": [
         {
             "type": "java",
+            "name": "CodeLens (Launch) - Permutation (distinct)",
+            "request": "launch",
+            "mainClass": "Permutation",
+            "projectName": "Percolation",
+            "args": "3 < ${workspaceFolder}/Tests/distinct.txt"
+        },
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - Permutation (duplicates)",
+            "request": "launch",
+            "mainClass": "Permutation",
+            "projectName": "Percolation",
+            "args": "8 < ${workspaceFolder}/Tests/duplicates.txt"
+        },
+        {
+            "type": "java",
             "name": "CodeLens (Launch) - RandomizedQueue",
             "request": "launch",
             "mainClass": "RandomizedQueue",
