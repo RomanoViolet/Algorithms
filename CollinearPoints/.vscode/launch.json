@@ -1,0 +1,15 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - Point",
+            "request": "launch",
+            "mainClass": "Point",
+            "projectName": "CollinearPoints",
+            "vmArgs": [
+                "-ea"
+            ]
+        }
+    ]
+}
