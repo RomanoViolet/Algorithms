@@ -10,6 +10,27 @@
             "vmArgs": [
                 "-ea"
             ]
+        },
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - Combination",
+            "request": "launch",
+            "mainClass": "Combination",
+            "projectName": "CollinearPoints",
+            "vmArgs": [
+                "-ea"
+            ]
+        },
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - Test",
+            "request": "launch",
+            "mainClass": "Test",
+            "projectName": "CollinearPoints",
+            "vmArgs": [
+                "-ea"
+            ],
+            "args": "< ${workspaceFolder}/Tests/input50.txt"
         }
     ]
 }
