@@ -1,11 +1,22 @@
+
 public class BruteCollinearPoints {
 
     private Point[] points;
     private final int POINTS_EXAMINED_FOR_COLLINEARITY = 4;
     private int nCombinations = 0;
 
+    // TODO Remove This
+    public class Record {
+        LineSegment segment;
+        Point[] points;
+    }
+
     private class Node {
         private LineSegment thisPoint = null;
+
+        // TODO Remove this.
+        private Point[] allPointsOnThisLine = null;
+
         private Node nextTowardsTail = null;
     }
 
@@ -31,9 +42,9 @@ public class BruteCollinearPoints {
             for (int j = i; j > 0; j--) {
                 // if points[j] < points[j-1]
                 if (sortedPoints[j].compareTo(sortedPoints[j - 1]) == -1) {
-                    Point temp = points[j];
-                    points[j] = points[j - 1];
-                    points[j - 1] = temp;
+                    Point temp = sortedPoints[j];
+                    sortedPoints[j] = sortedPoints[j - 1];
+                    sortedPoints[j - 1] = temp;
                 } else {
                     break;
                 }
@@ -64,6 +75,10 @@ public class BruteCollinearPoints {
                 newHead.nextTowardsTail = this.head;
                 this.head = newHead;
                 this.size++;
+
+                // TODO Remove this;
+                newHead.allPointsOnThisLine = result;
+
             }
             return;
         }
@@ -74,8 +89,8 @@ public class BruteCollinearPoints {
 
     }
 
-    private long factorial(int n) {
-        long result = 1;
+    private double factorial(int n) {
+        double result = 1;
         for (int i = 2; i <= n; ++i) {
             result = result * i;
         }
@@ -86,7 +101,7 @@ public class BruteCollinearPoints {
         Point[] result = new Point[k];
         this.GenerateOneCombination(this.points, k, 0, result);
         int n = this.points.length;
-        long expectedNumberOfCombinations = this.factorial(n) / (this.factorial(k) * this.factorial(n - k));
+        double expectedNumberOfCombinations = this.factorial(n) / (this.factorial(k) * this.factorial(n - k));
         assert (expectedNumberOfCombinations == this.nCombinations) : "Number of combinations generated is incorrect";
     }
 
@@ -98,9 +113,24 @@ public class BruteCollinearPoints {
             this.head = this.head.nextTowardsTail;
             numberOfSegments++;
         }
-
-        assert (numberOfSegments == this.size) : "Incorrect number of segments collected";
+        assert ((numberOfSegments + 1) == this.size) : "Incorrect number of segments collected";
         return (arrayOfLineSegments);
+    }
+
+    // TODO Remove this
+    public Record[] generateArrayOfRecords() {
+
+        Record[] record = new Record[this.size];
+        int numberOfSegments = 0;
+        while (this.head.nextTowardsTail != null) {
+            record[numberOfSegments].segment = this.head.thisPoint;
+            record[numberOfSegments].points = this.head.allPointsOnThisLine;
+            this.head = this.head.nextTowardsTail;
+            numberOfSegments++;
+        }
+
+        return (record);
+
     }
 
     // the number of line segments
@@ -113,7 +143,6 @@ public class BruteCollinearPoints {
         this.GenerateAllCombinationOfPoints(4);
         LineSegment[] allSegments = this.generateArrayOfLineSegments();
         return (allSegments);
-
     }
 
 }

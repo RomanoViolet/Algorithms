@@ -42,10 +42,29 @@ public class Test {
         }
 
         BruteCollinearPoints bruteForceCollinearPoints = new BruteCollinearPoints(points);
-        LineSegment[] segments = bruteForceCollinearPoints.segments();
-        for (int i = 0; i < segments.length; ++i) {
-            segments[i].draw();
+        // LineSegment[] segments = bruteForceCollinearPoints.segments();
+        // StdDraw.setPenRadius(0.005);
+        // StdDraw.setPenColor(new Color(173, 216, 230));
+        // for (int i = 0; i < segments.length; ++i) {
+        // segments[i].draw();
+        // }
+
+        BruteCollinearPoints.Record[] allPointsAndLines = bruteForceCollinearPoints.generateArrayOfRecords();
+
+        for (int i = 0; i < allPointsAndLines.length; ++i) {
+            StdDraw.setPenRadius(0.005);
+            StdDraw.setPenColor(new Color(173, 216, 230));
+            for (int j = 0; j < allPointsAndLines[i].points.length; ++j) {
+                allPointsAndLines[i].points[j].draw();
+            }
+            StdDraw.setPenRadius(0.01);
+            StdDraw.setXscale(minX, maxX);
+            StdDraw.setYscale(minY, maxY);
+            StdDraw.setPenColor(new Color(10, 10, 10));
+            allPointsAndLines[i].segment.draw();
+
         }
+        System.out.println("Done");
 
     }
 
