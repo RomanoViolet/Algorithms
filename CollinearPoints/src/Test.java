@@ -52,6 +52,7 @@ public class Test {
             segments[i].draw();
         }
 
+        // only for debug
         BruteCollinearPoints.Record[] allPointsAndLines = bruteForceCollinearPoints.generateArrayOfRecords();
 
         for (int i = 0; i < allPointsAndLines.length; ++i) {
