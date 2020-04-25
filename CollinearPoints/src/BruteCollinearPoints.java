@@ -15,7 +15,44 @@ public class BruteCollinearPoints {
     // finds all line segments containing 4 points
     // to be instantiated with a list of <x,y> tuples.
     public BruteCollinearPoints(Point[] points) {
+        if (points == null) {
+            throw new IllegalAccessError("No Points Supplied");
+        }
+
+        if (this.isAnyPointNull(points)) {
+            throw new IllegalArgumentException("A null point provided");
+        }
+
+        if (this.doDuplicatesExist(points)) {
+            throw new IllegalArgumentException("Duplicate Points provided");
+        }
         this.points = points;
+    }
+
+    private boolean isAnyPointNull(Point[] points) {
+        boolean nullPointsExist = false;
+        for (int i = 0; i < points.length; ++i) {
+            if (points[i] == null) {
+                nullPointsExist = true;
+                break;
+            }
+        }
+
+        return (nullPointsExist);
+    }
+
+    private boolean doDuplicatesExist(Point[] points) {
+        boolean duplicatesExist = false;
+        Point[] sortedPoints = new Point[points.length];
+        sortedPoints = this.sortPoints(points);
+        for (int i = 1; i < sortedPoints.length; ++i) {
+            if (sortedPoints[i].compareTo(sortedPoints[i - 1]) == 0) {
+                duplicatesExist = true;
+                break;
+            }
+        }
+
+        return (duplicatesExist);
     }
 
     private Point[] sortPoints(Point[] points) {
