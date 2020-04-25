@@ -1,5 +1,3 @@
-import javax.sound.sampled.Line;
-
 //public class BruteCollinearPoints {
 // TODO: Remove this class declaration
 public class BruteCollinearPoints implements Cloneable {
@@ -120,7 +118,10 @@ public class BruteCollinearPoints implements Cloneable {
         this.GenerateOneCombination(this.points, k, 0, result);
         int n = this.points.length;
         double expectedNumberOfCombinations = this.factorial(n) / (this.factorial(k) * this.factorial(n - k));
-        assert (expectedNumberOfCombinations == this.nCombinations) : "Number of combinations generated is incorrect";
+        // assert (expectedNumberOfCombinations == this.nCombinations) : "Number of
+        // combinations generated is incorrect";
+        assert ((expectedNumberOfCombinations - this.nCombinations) < 1 && (expectedNumberOfCombinations
+                - this.nCombinations) > -1) : "Number of combinations generated is incorrect";
     }
 
     private LineSegment[] generateArrayOfLineSegments() {
