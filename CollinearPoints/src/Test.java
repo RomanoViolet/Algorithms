@@ -39,34 +39,35 @@ public class Test {
             maxY = maxY + 1;
         }
         StdDraw.setYscale(minY - 100, maxY + 100);
-        // StdDraw.setPenColor(new Color(10, 10, 10));
-        // for (int i = 0; i < points.length; ++i) {
-        // points[i].draw();
-        // }
+        StdDraw.setPenColor(new Color(10, 10, 10));
+        for (int i = 0; i < points.length; ++i) {
+            points[i].draw();
+        }
 
         BruteCollinearPoints bruteForceCollinearPoints = new BruteCollinearPoints(points);
-        // LineSegment[] segments = bruteForceCollinearPoints.segments();
-        // StdDraw.setPenRadius(0.005);
-        // StdDraw.setPenColor(new Color(173, 216, 230));
-        // for (int i = 0; i < segments.length; ++i) {
-        // segments[i].draw();
-        // }
+        LineSegment[] segments = bruteForceCollinearPoints.segments();
+        StdDraw.setPenRadius(0.005);
+        StdDraw.setPenColor(new Color(173, 216, 230));
+        for (int i = 0; i < segments.length; ++i) {
+            segments[i].draw();
+        }
 
         // only for debug
-        BruteCollinearPoints.Record[] allPointsAndLines = bruteForceCollinearPoints.generateArrayOfRecords();
+        // BruteCollinearPoints.Record[] allPointsAndLines =
+        // bruteForceCollinearPoints.generateArrayOfRecords();
 
-        for (int i = 0; i < allPointsAndLines.length; ++i) {
-            StdDraw.setPenRadius(0.01);
-            StdDraw.setPenColor(new Color(10, 10, 10));
-            for (int j = 0; j < allPointsAndLines[i].points.length; ++j) {
-                allPointsAndLines[i].points[j].draw();
-            }
-            StdDraw.setPenRadius(0.005);
-            StdDraw.setPenColor(new Color(173, 216, 230));
+        // for (int i = 0; i < allPointsAndLines.length; ++i) {
+        // StdDraw.setPenRadius(0.01);
+        // StdDraw.setPenColor(new Color(10, 10, 10));
+        // for (int j = 0; j < allPointsAndLines[i].points.length; ++j) {
+        // allPointsAndLines[i].points[j].draw();
+        // }
+        // StdDraw.setPenRadius(0.005);
+        // StdDraw.setPenColor(new Color(173, 216, 230));
 
-            allPointsAndLines[i].segment.draw();
+        // allPointsAndLines[i].segment.draw();
 
-        }
+        // }
         System.out.println("Done");
 
     }

@@ -30,7 +30,7 @@
             "vmArgs": [
                 "-ea"
             ],
-            "args": "< ${workspaceFolder}/Tests/input100.txt"
+            "args": "< ${workspaceFolder}/Tests/input56.txt"
         }
     ]
 }
