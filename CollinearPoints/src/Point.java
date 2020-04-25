@@ -70,9 +70,11 @@ public class Point implements Comparable<Point> {
             // Double.NEGATIVE_INFINITY if (x0, y0) and (x1, y1) are equal
             slope = Double.NEGATIVE_INFINITY;
         } else {
-            slope = (that.y - this.y) / (that.x - this.x);
+            slope = Double.valueOf(that.y - this.y) / Double.valueOf(that.x - this.x);
         }
-
+        // System.out.println("that.y: " + that.y + " this.y: " + this.y + " that.x: " +
+        // that.x + " this.x: " + this.x);
+        // System.out.println("Slope: " + slope);
         return slope;
 
     }
@@ -96,7 +98,7 @@ public class Point implements Comparable<Point> {
         if ((this.y == that.y) && (this.x < that.x))
             return -1;
         if ((this.y == that.y) && (this.x > that.x))
-            return -1;
+            return +1;
         return 0;
     }
 
