@@ -37,9 +37,9 @@ public class Test {
         StdDraw.setXscale(minX, maxX);
         StdDraw.setYscale(minY, maxY);
         StdDraw.setPenColor(new Color(10, 10, 10));
-        for (int i = 0; i < points.length; ++i) {
-            points[i].draw();
-        }
+        // for (int i = 0; i < points.length; ++i) {
+        // points[i].draw();
+        // }
 
         BruteCollinearPoints bruteForceCollinearPoints = new BruteCollinearPoints(points);
         // LineSegment[] segments = bruteForceCollinearPoints.segments();
@@ -52,15 +52,14 @@ public class Test {
         BruteCollinearPoints.Record[] allPointsAndLines = bruteForceCollinearPoints.generateArrayOfRecords();
 
         for (int i = 0; i < allPointsAndLines.length; ++i) {
-            StdDraw.setPenRadius(0.005);
-            StdDraw.setPenColor(new Color(173, 216, 230));
+            StdDraw.setPenRadius(0.01);
+            StdDraw.setPenColor(new Color(10, 10, 10));
             for (int j = 0; j < allPointsAndLines[i].points.length; ++j) {
                 allPointsAndLines[i].points[j].draw();
             }
-            StdDraw.setPenRadius(0.01);
-            StdDraw.setXscale(minX, maxX);
-            StdDraw.setYscale(minY, maxY);
-            StdDraw.setPenColor(new Color(10, 10, 10));
+            StdDraw.setPenRadius(0.005);
+            StdDraw.setPenColor(new Color(173, 216, 230));
+
             allPointsAndLines[i].segment.draw();
 
         }

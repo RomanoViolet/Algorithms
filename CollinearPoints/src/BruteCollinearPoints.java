@@ -1,5 +1,7 @@
 
-public class BruteCollinearPoints {
+//public class BruteCollinearPoints {
+// TODO: Remove this class declaration
+public class BruteCollinearPoints implements Cloneable {
 
     private Point[] points;
     private final int POINTS_EXAMINED_FOR_COLLINEARITY = 4;
@@ -18,6 +20,7 @@ public class BruteCollinearPoints {
         private Point[] allPointsOnThisLine = null;
 
         private Node nextTowardsTail = null;
+
     }
 
     private Node head = null;
@@ -108,6 +111,7 @@ public class BruteCollinearPoints {
     private LineSegment[] generateArrayOfLineSegments() {
         LineSegment[] arrayOfLineSegments = new LineSegment[this.size];
         int numberOfSegments = 0;
+
         while (this.head.nextTowardsTail != null) {
             arrayOfLineSegments[numberOfSegments] = this.head.thisPoint;
             this.head = this.head.nextTowardsTail;
@@ -119,10 +123,11 @@ public class BruteCollinearPoints {
 
     // TODO Remove this
     public Record[] generateArrayOfRecords() {
-
+        this.GenerateAllCombinationOfPoints(4);
         Record[] record = new Record[this.size];
         int numberOfSegments = 0;
         while (this.head.nextTowardsTail != null) {
+            record[numberOfSegments] = new Record();
             record[numberOfSegments].segment = this.head.thisPoint;
             record[numberOfSegments].points = this.head.allPointsOnThisLine;
             this.head = this.head.nextTowardsTail;
