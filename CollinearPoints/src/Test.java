@@ -51,23 +51,6 @@ public class Test {
         for (int i = 0; i < segments.length; ++i) {
             segments[i].draw();
         }
-
-        // only for debug
-        // BruteCollinearPoints.Record[] allPointsAndLines =
-        // bruteForceCollinearPoints.generateArrayOfRecords();
-
-        // for (int i = 0; i < allPointsAndLines.length; ++i) {
-        // StdDraw.setPenRadius(0.01);
-        // StdDraw.setPenColor(new Color(10, 10, 10));
-        // for (int j = 0; j < allPointsAndLines[i].points.length; ++j) {
-        // allPointsAndLines[i].points[j].draw();
-        // }
-        // StdDraw.setPenRadius(0.005);
-        // StdDraw.setPenColor(new Color(173, 216, 230));
-
-        // allPointsAndLines[i].segment.draw();
-
-        // }
         System.out.println("Done");
 
     }
