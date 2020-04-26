@@ -201,7 +201,10 @@ public class FastCollinearPoints {
                         }
 
                         // TODO Remove the plotting statements
+                        StdDraw.clear();
                         minPoint.draw();
+                        maxPoint.draw();
+                        points[i].draw();
                         for (int _t = 0; _t < runningCounter; _t++) {
                             n[k - 1 - _t].thisPoint.draw();
                         }
@@ -258,6 +261,9 @@ public class FastCollinearPoints {
                 }
 
                 // TODO Remove the plotting statements
+                StdDraw.clear();
+                maxPoint.draw();
+                points[i].draw();
                 minPoint.draw();
                 for (int _t = 0; _t < runningCounter; _t++) {
                     n[k - 1 - _t].thisPoint.draw();
