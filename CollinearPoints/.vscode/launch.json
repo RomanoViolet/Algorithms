@@ -31,6 +31,17 @@
                 "-ea"
             ],
             "args": "< ${workspaceFolder}/Tests/input56.txt"
+        },
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - TestFastCollinearPoints",
+            "request": "launch",
+            "mainClass": "TestFastCollinearPoints",
+            "projectName": "CollinearPoints",
+            "vmArgs": [
+                "-ea"
+            ],
+            "args": "< ${workspaceFolder}/Tests/input40.txt"
         }
     ]
 }
