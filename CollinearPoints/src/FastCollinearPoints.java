@@ -11,10 +11,21 @@ public class FastCollinearPoints {
     // number of line segments found
     private int size = 0;
 
-    private class SegmentsWithMinPoint {
+    private class SegmentsWithMinPoint implements Comparable<SegmentsWithMinPoint> {
         private LineSegment segment;
         private Point minPoint;
         private Double slope;
+
+        // compare by min point
+        public int compareTo(SegmentsWithMinPoint that) {
+            if (this.minPoint.compareTo(that.minPoint) == -1) {
+                return -1;
+            }
+            if (this.minPoint.compareTo(that.minPoint) == 1) {
+                return +1;
+            }
+            return 0;
+        }
     }
 
     private class Node implements Comparable<Node> {
@@ -95,26 +106,49 @@ public class FastCollinearPoints {
         // sort based on slope
         Node[] aux = new Node[nElementsInAllSegmentsArray];
         this.mergeSort(allSegments, aux, 0, nElementsInAllSegmentsArray - 1);
+        aux = null;
+
+        // within sorted by slope, sort again by minPoints.
+        // Exploit mergesort's property of stability.
+        // segment, slope, minPoint.
+        // first creat an array which will then be passed onto mergesort.
+        SegmentsWithMinPoint[] segmentsSoredByMinPoints = new SegmentsWithMinPoint[nElementsInAllSegmentsArray];
+        for (int k = 0; k < nElementsInAllSegmentsArray; ++k) {
+            segmentsSoredByMinPoints[k] = new SegmentsWithMinPoint();
+            segmentsSoredByMinPoints[k].minPoint = allSegments[k].segmentWithMinPoint.minPoint;
+            segmentsSoredByMinPoints[k].segment = allSegments[k].segmentWithMinPoint.segment;
+            segmentsSoredByMinPoints[k].slope = allSegments[k].slope;
+        }
+
+        SegmentsWithMinPoint[] aux_segmentsSoredByMinPoints = new SegmentsWithMinPoint[nElementsInAllSegmentsArray];
+        this.mergeSort(segmentsSoredByMinPoints, aux_segmentsSoredByMinPoints, 0, nElementsInAllSegmentsArray - 1);
+        aux_segmentsSoredByMinPoints = null;
 
         // remove duplicates. Duplicates are defined to be elements with the same slope
         // and same minPoint
         int numberOfUniqueSegments = nElementsInAllSegmentsArray;
         for (int k = 1; k < nElementsInAllSegmentsArray; ++k) {
-            if ((allSegments[k] != null) && (allSegments[k].slope.compareTo(allSegments[k - 1].slope) == 0)
-                    && (allSegments[k].segmentWithMinPoint.minPoint
-                            .compareTo(allSegments[k - 1].segmentWithMinPoint.minPoint) == 0)) {
+            if ((segmentsSoredByMinPoints[k] != null)
+                    && (segmentsSoredByMinPoints[k].slope.compareTo(segmentsSoredByMinPoints[k - 1].slope) == 0)
+                    && (segmentsSoredByMinPoints[k].minPoint
+                            .compareTo(segmentsSoredByMinPoints[k - 1].minPoint) == 0)) {
                 // duplicate segment. Move it to the end of the array
 
                 // move the duplicate segment to the end of the array.
-                allSegments[k - 1] = null;
+                segmentsSoredByMinPoints[k - 1] = null;
                 // allSegments[numberOfUniqueSegments - 1] = null;
                 numberOfUniqueSegments--;
             }
         }
 
         this.uniqueSegments = new LineSegment[numberOfUniqueSegments];
-        for (int currentUniqueSegmentNumber = 0; currentUniqueSegmentNumber < numberOfUniqueSegments; ++currentUniqueSegmentNumber) {
-            this.uniqueSegments[currentUniqueSegmentNumber] = allSegments[currentUniqueSegmentNumber].segmentWithMinPoint.segment;
+        int finalIndexOfSegment = 0;
+        for (int currentUniqueSegmentNumber = 0; currentUniqueSegmentNumber < segmentsSoredByMinPoints.length; ++currentUniqueSegmentNumber) {
+            if (segmentsSoredByMinPoints[currentUniqueSegmentNumber] == null) {
+                continue;
+            }
+            this.uniqueSegments[finalIndexOfSegment] = segmentsSoredByMinPoints[currentUniqueSegmentNumber].segment;
+            finalIndexOfSegment++;
         }
 
         // Correct the total number of unique segments
