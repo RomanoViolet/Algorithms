@@ -106,8 +106,8 @@ public class FastCollinearPoints {
                 // duplicate segment. Move it to the end of the array
 
                 // move the duplicate segment to the end of the array.
-                allSegments[k] = allSegments[numberOfUniqueSegments - 1];
-                allSegments[numberOfUniqueSegments - 1] = null;
+                allSegments[k - 1] = null;
+                // allSegments[numberOfUniqueSegments - 1] = null;
                 numberOfUniqueSegments--;
             }
         }
