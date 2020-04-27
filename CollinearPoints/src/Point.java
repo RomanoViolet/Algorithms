@@ -70,7 +70,14 @@ public class Point implements Comparable<Point> {
             // Double.NEGATIVE_INFINITY if (x0, y0) and (x1, y1) are equal
             slope = Double.NEGATIVE_INFINITY;
         } else {
-            slope = Double.valueOf(that.y - this.y) / Double.valueOf(that.x - this.x);
+            double numerator = that.y - this.y;
+            double denominator = that.x - this.x;
+            slope = numerator / denominator;
+            if (slope == -0) {
+                slope = 0;
+            }
+            // slope = Double.valueOf(that.y - this.y) / Double.valueOf(that.x - this.x);
+
         }
         // System.out.println("that.y: " + that.y + " this.y: " + this.y + " that.x: " +
         // that.x + " this.x: " + this.x);
@@ -158,12 +165,12 @@ public class Point implements Comparable<Point> {
         assert (a.slopeTo(d) == 1) : "Slope comparison is incorrect";
 
         assert (a.compareTo(b) == 0) : "Comparison between equal points is broken ";
-        assert (a.compareTo(c) == -1) : "Check that (0,0) < (0,1) failed.";
+        assert (a.compareTo(c) < 0) : "Check that (0,0) < (0,1) failed.";
 
         Point e = new Point(1, 0);
-        assert (a.compareTo(e) == -1) : "Check that (0,0) < (1,0) failed.";
+        assert (a.compareTo(e) < 0) : "Check that (0,0) < (1,0) failed.";
 
-        assert (a.slopeOrder().compare(c, d) == 1) : "Comparator is incorrect";
+        assert (a.slopeOrder().compare(c, d) > 0) : "Comparator is incorrect";
 
     }
 }

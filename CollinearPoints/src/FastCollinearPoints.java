@@ -1,6 +1,6 @@
 public class FastCollinearPoints {
 
-    private Point[] points;
+    private final Point[] points;
     private LineSegment[] uniqueSegments;
 
     // number of line segments found
@@ -9,14 +9,14 @@ public class FastCollinearPoints {
     private class SegmentsWithMinPoint implements Comparable<SegmentsWithMinPoint> {
         private LineSegment segment;
         private Point minPoint;
-        private Double slope;
+        private double slope;
 
         // compare by min point
         public int compareTo(SegmentsWithMinPoint that) {
-            if (this.minPoint.compareTo(that.minPoint) == -1) {
+            if (this.minPoint.compareTo(that.minPoint) < 0) {
                 return -1;
             }
-            if (this.minPoint.compareTo(that.minPoint) == 1) {
+            if (this.minPoint.compareTo(that.minPoint) > 0) {
                 return +1;
             }
             return 0;
@@ -26,15 +26,15 @@ public class FastCollinearPoints {
     private class Node implements Comparable<Node> {
         private SegmentsWithMinPoint segmentWithMinPoint = null;
         private Node nextTowardsTail = null;
-        private Double slope;
+        private double slope;
         private Point thisPoint;
 
         // compare by slope
         public int compareTo(Node that) {
 
-            if (this.slope.compareTo(that.slope) == -1)
+            if (Double.compare(this.slope, that.slope) == -1)
                 return -1;
-            if (this.slope.compareTo(that.slope) == 1)
+            if (Double.compare(this.slope, that.slope) == 1)
                 return +1;
             return 0;
         }
@@ -53,7 +53,7 @@ public class FastCollinearPoints {
         }
 
         // sort the points, which is necessary for some methods.
-        this.points = points;
+        this.points = points.clone();
         Point[] aux = new Point[this.points.length];
         this.mergeSort(this.points, aux, 0, this.points.length - 1);
 
@@ -70,6 +70,13 @@ public class FastCollinearPoints {
     }
 
     private void removeDuplicateSegments() {
+
+        if (this.size == 0) {
+            // return a 0-length array. Not null.
+            this.uniqueSegments = new LineSegment[this.size];
+            return;
+        }
+
         Node[] allSegments = new Node[this.size];
         int i = 0;
         // remove all segments with the same slope and the same min point
@@ -115,16 +122,16 @@ public class FastCollinearPoints {
             segmentsSoredByMinPoints[k].slope = allSegments[k].slope;
         }
 
-        SegmentsWithMinPoint[] aux_segmentsSoredByMinPoints = new SegmentsWithMinPoint[nElementsInAllSegmentsArray];
-        this.mergeSort(segmentsSoredByMinPoints, aux_segmentsSoredByMinPoints, 0, nElementsInAllSegmentsArray - 1);
-        aux_segmentsSoredByMinPoints = null;
+        SegmentsWithMinPoint[] auxSegmentsSoredByMinPoints = new SegmentsWithMinPoint[nElementsInAllSegmentsArray];
+        this.mergeSort(segmentsSoredByMinPoints, auxSegmentsSoredByMinPoints, 0, nElementsInAllSegmentsArray - 1);
+        auxSegmentsSoredByMinPoints = null;
 
         // remove duplicates. Duplicates are defined to be elements with the same slope
         // and same minPoint
         int numberOfUniqueSegments = nElementsInAllSegmentsArray;
         for (int k = 1; k < nElementsInAllSegmentsArray; ++k) {
             if ((segmentsSoredByMinPoints[k] != null)
-                    && (segmentsSoredByMinPoints[k].slope.compareTo(segmentsSoredByMinPoints[k - 1].slope) == 0)
+                    && (Double.compare(segmentsSoredByMinPoints[k].slope, segmentsSoredByMinPoints[k - 1].slope) == 0)
                     && (segmentsSoredByMinPoints[k].minPoint
                             .compareTo(segmentsSoredByMinPoints[k - 1].minPoint) == 0)) {
                 // duplicate segment. Move it to the end of the array
@@ -151,21 +158,21 @@ public class FastCollinearPoints {
 
     }
 
-    private void findAllSegments(Point[] points) {
+    private void findAllSegments(Point[] arg) {
 
         // take each point, and examine the slope made by every other point to this
         // point.
         // report all points which make the same slope.
         // Slope values may be repeated, e.g., s1, s1, s2, s3, s3, ...
         // Requirement: A line should contain 4 or more points, exactly once.
-        for (int i = 0; i < points.length; ++i) {
+        for (int i = 0; i < arg.length; ++i) {
 
             // points[i] is the reference point.
 
-            Node[] n = new Node[points.length];
-            for (int j = 0; j < points.length; ++j) {
+            Node[] n = new Node[arg.length];
+            for (int j = 0; j < arg.length; ++j) {
                 n[j] = new Node();
-                n[j].slope = points[i].slopeTo(points[j]);
+                n[j].slope = arg[i].slopeTo(arg[j]);
                 // a slope of +s and -s are still on the same line, just different direction.
                 // for simplicity, we convert all slopes to +ve number.
                 // Exception: -Inf since it is expected to be at the beginning of the array, and
@@ -174,7 +181,7 @@ public class FastCollinearPoints {
                 // n[j].slope = -1 * n[j].slope;
                 // }
                 // record the point from which the slope to points[i] is calculated.
-                n[j].thisPoint = points[j];
+                n[j].thisPoint = arg[j];
             }
 
             Node[] aux = new Node[n.length];
@@ -188,8 +195,7 @@ public class FastCollinearPoints {
             // after mergesort, the slope of -∞ and correponding reference node will be
             // first element of the array
             assert (n[0].slope == Double.NEGATIVE_INFINITY) : "Sorting by slope is incorrect";
-            assert (n[0].thisPoint
-                    .compareTo(points[i]) == 0) : "First point in n is not the reference point, as expected";
+            assert (n[0].thisPoint.compareTo(arg[i]) == 0) : "First point in n is not the reference point, as expected";
             // since duplicates have been removed, there will no other point with slope of
             // -∞
 
@@ -199,14 +205,14 @@ public class FastCollinearPoints {
             Point startingPoint = n[1].thisPoint;
             for (int k = 2; k < n.length; ++k) {
                 // -0 != 0 for Doubles. For algorithm, it is.
-                if ((n[k].slope.compareTo(n[k - 1].slope) == 0) || ((n[k].slope == 0) && (n[k - 1].slope == -0))
+                if ((Double.compare(n[k].slope, n[k - 1].slope) == 0) || ((n[k].slope == 0) && (n[k - 1].slope == -0))
                         || ((n[k].slope == -0) && (n[k - 1].slope == 0))) {
                     runningCounter++;
 
                 } else {
                     // reference point is to be added separately
                     if (runningCounter >= 3) {
-                        addSegment(points, i, n, startingPoint, k);
+                        addSegment(arg, i, n, startingPoint, k);
 
                     }
                     runningCounter = 1;
@@ -218,13 +224,13 @@ public class FastCollinearPoints {
             // in the loop above.
             int k = n.length;
             if (runningCounter >= 3) {
-                addSegment(points, i, n, startingPoint, k);
+                addSegment(arg, i, n, startingPoint, k);
             }
         }
 
     }
 
-    private void addSegment(Point[] points, int i, Node[] n, Point startingPoint, int k) {
+    private void addSegment(Point[] arg, int i, Node[] n, Point startingPoint, int k) {
         LineSegment newSegment;
         Point minPoint;
         Point maxPoint;
@@ -232,16 +238,16 @@ public class FastCollinearPoints {
         // found 3 points which lie on a straight line through the reference point
         // check whether the reference point lies on the end of the chosen points
         // exploit the stability of mergesort to compare only two points
-        if (points[i].compareTo(startingPoint) == -1) {
+        if (arg[i].compareTo(startingPoint) < 0) {
             // reference point is the smallest in the points with the same slope
-            newSegment = new LineSegment(points[i], n[k - 1].thisPoint);
-            minPoint = points[i];
+            newSegment = new LineSegment(arg[i], n[k - 1].thisPoint);
+            minPoint = arg[i];
             maxPoint = n[k - 1].thisPoint;
-        } else if (points[i].compareTo(n[k - 1].thisPoint) == 1) {
+        } else if (arg[i].compareTo(n[k - 1].thisPoint) > 0) {
             // reference point is the largest in the points with the same slope
-            newSegment = new LineSegment(startingPoint, points[i]);
+            newSegment = new LineSegment(startingPoint, arg[i]);
             minPoint = startingPoint;
-            maxPoint = points[i];
+            maxPoint = arg[i];
         } else {
             // reference point lies somewhere in between
             newSegment = new LineSegment(startingPoint, n[k - 1].thisPoint);
@@ -262,10 +268,10 @@ public class FastCollinearPoints {
         this.size++;
     }
 
-    private boolean isAnyPointNull(Point[] points) {
+    private boolean isAnyPointNull(Point[] arg) {
         boolean nullPointsExist = false;
-        for (int i = 0; i < points.length; ++i) {
-            if (points[i] == null) {
+        for (int i = 0; i < arg.length; ++i) {
+            if (arg[i] == null) {
                 nullPointsExist = true;
                 break;
             }
@@ -273,10 +279,10 @@ public class FastCollinearPoints {
         return (nullPointsExist);
     }
 
-    private boolean doDuplicatesExist(Point[] points) {
+    private boolean doDuplicatesExist(Point[] arg) {
         boolean duplicatesExist = false;
-        for (int i = 1; i < points.length; ++i) {
-            if (points[i].compareTo(points[i - 1]) == 0) {
+        for (int i = 1; i < arg.length; ++i) {
+            if (arg[i].compareTo(arg[i - 1]) == 0) {
                 duplicatesExist = true;
                 break;
             }
@@ -284,11 +290,11 @@ public class FastCollinearPoints {
         return (duplicatesExist);
     }
 
-    private <T extends Comparable<? super T>> boolean isSorted(T[] points, int lo, int hi) {
+    private <T extends Comparable<? super T>> boolean isSorted(T[] arg, int lo, int hi) {
         boolean isSorted = true;
 
         for (int i = lo + 1; i <= hi; ++i) {
-            if (points[i - 1].compareTo(points[i]) == 1) {
+            if (arg[i - 1].compareTo(arg[i]) > 0) {
                 isSorted = false;
                 break;
             }
@@ -296,13 +302,13 @@ public class FastCollinearPoints {
         return (isSorted);
     }
 
-    private <T extends Comparable<? super T>> void merge(T[] points, T[] aux, int lo, int mid, int hi) {
-        assert isSorted(points, lo, mid);
-        assert isSorted(points, mid + 1, hi);
+    private <T extends Comparable<? super T>> void merge(T[] arg, T[] aux, int lo, int mid, int hi) {
+        assert isSorted(arg, lo, mid);
+        assert isSorted(arg, mid + 1, hi);
 
         // copy into aux array
         for (int i = lo; i <= hi; ++i) {
-            aux[i] = points[i];
+            aux[i] = arg[i];
         }
 
         // initialize the pointers to firsst elements of both half-arrays to be merged
@@ -315,17 +321,17 @@ public class FastCollinearPoints {
 
             // if the elements in the first half are exhausted
             if (i > mid) {
-                points[k] = aux[j++];
+                arg[k] = aux[j++];
             }
             // if the elements in the second half are exhausted
             else if (j > hi) {
-                points[k] = aux[i++];
+                arg[k] = aux[i++];
             }
             // compare elements across the halves
-            else if (aux[j].compareTo(aux[i]) == -1) {
-                points[k] = aux[j++];
+            else if (aux[j].compareTo(aux[i]) < 0) {
+                arg[k] = aux[j++];
             } else {
-                points[k] = aux[i++];
+                arg[k] = aux[i++];
             }
         }
     }
@@ -348,9 +354,8 @@ public class FastCollinearPoints {
 
     // the line segments
     public LineSegment[] segments() {
-        return (this.uniqueSegments);
+        LineSegment[] result = this.uniqueSegments.clone();
+        return (result);
     }
-
-    // TODO Add Iterable.
 
 }

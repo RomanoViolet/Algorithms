@@ -1,6 +1,7 @@
 import edu.princeton.cs.algs4.StdIn;
 import edu.princeton.cs.algs4.StdDraw;
 import java.awt.Color;
+import edu.princeton.cs.algs4.StdOut;
 
 public class TestFastCollinearPoints {
     public static void main(String[] args) {
@@ -47,11 +48,15 @@ public class TestFastCollinearPoints {
         StdDraw.setPenRadius(0.005);
         StdDraw.setPenColor(new Color(173, 216, 230));
         FastCollinearPoints fastCollinearPoints = new FastCollinearPoints(points);
-        LineSegment[] segments = fastCollinearPoints.segments();
+        // LineSegment[] segments = fastCollinearPoints.segments();
         StdDraw.setPenRadius(0.005);
         StdDraw.setPenColor(new Color(173, 216, 230));
-        for (int i = 0; i < segments.length; ++i) {
-            segments[i].draw();
+        // for (int i = 0; i < segments.length; ++i) {
+        // segments[i].draw();
+        // }
+        for (LineSegment segment : fastCollinearPoints.segments()) {
+            StdOut.println(segment);
+            segment.draw();
         }
         System.out.println("Done");
 
