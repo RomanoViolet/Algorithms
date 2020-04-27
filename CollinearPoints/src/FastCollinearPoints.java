@@ -203,8 +203,9 @@ public class FastCollinearPoints {
             int runningCounter = 1;
             Point startingPoint = n[1].thisPoint;
             for (int k = 2; k < n.length; ++k) {
-
-                if (n[k].slope.compareTo(n[k - 1].slope) == 0) {
+                // -0 != 0 for Doubles. For algorithm, it is.
+                if ((n[k].slope.compareTo(n[k - 1].slope) == 0) || ((n[k].slope == 0) && (n[k - 1].slope == -0))
+                        || ((n[k].slope == -0) && (n[k - 1].slope == 0))) {
                     runningCounter++;
 
                 } else {
