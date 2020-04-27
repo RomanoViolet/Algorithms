@@ -40,9 +40,9 @@ public class TestFastCollinearPoints {
         }
         StdDraw.setYscale(minY - 100, maxY + 100);
         StdDraw.setPenColor(new Color(10, 10, 10));
-        // for (int i = 0; i < points.length; ++i) {
-        // points[i].draw();
-        // }
+        for (int i = 0; i < points.length; ++i) {
+            points[i].draw();
+        }
 
         StdDraw.setPenRadius(0.005);
         StdDraw.setPenColor(new Color(173, 216, 230));
