@@ -14,9 +14,6 @@
 import java.util.Comparator;
 import edu.princeton.cs.algs4.StdDraw;
 
-// TODO Remove the include below
-import java.awt.Color;
-
 public class Point implements Comparable<Point> {
 
     private final int x; // x-coordinate of this point
@@ -39,10 +36,6 @@ public class Point implements Comparable<Point> {
      */
     public void draw() {
         /* DO NOT MODIFY */
-        // TODO: Remove the lines below
-        StdDraw.setPenRadius(0.01);
-        StdDraw.setPenColor(new Color(10, 10, 10));
-
         StdDraw.point(x, y);
     }
 

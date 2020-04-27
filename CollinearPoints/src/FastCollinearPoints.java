@@ -1,8 +1,3 @@
-
-//TODO Remove the include statement
-import edu.princeton.cs.algs4.StdDraw;
-import java.awt.Color;
-
 public class FastCollinearPoints {
 
     private Point[] points;
@@ -211,54 +206,7 @@ public class FastCollinearPoints {
                 } else {
                     // reference point is to be added separately
                     if (runningCounter >= 3) {
-                        LineSegment newSegment;
-                        Point minPoint;
-                        Point maxPoint;
-
-                        // found 3 points which lie on a straight line through the reference point
-                        // check whether the reference point lies on the end of the chosen points
-                        // exploit the stability of mergesort to compare only two points
-                        if (points[i].compareTo(startingPoint) == -1) {
-                            // reference point is the smallest in the points with the same slope
-                            newSegment = new LineSegment(points[i], n[k - 1].thisPoint);
-                            minPoint = points[i];
-                            maxPoint = n[k - 1].thisPoint;
-                        } else if (points[i].compareTo(n[k - 1].thisPoint) == 1) {
-                            // reference point is the largest in the points with the same slope
-                            newSegment = new LineSegment(startingPoint, points[i]);
-                            minPoint = startingPoint;
-                            maxPoint = points[i];
-                        } else {
-                            // reference point lies somewhere in between
-                            newSegment = new LineSegment(startingPoint, n[k - 1].thisPoint);
-                            minPoint = startingPoint;
-                            maxPoint = n[k - 1].thisPoint;
-                        }
-
-                        // TODO Remove the plotting statements
-                        StdDraw.clear();
-                        minPoint.draw();
-                        maxPoint.draw();
-                        points[i].draw();
-                        for (int _t = 0; _t < runningCounter; _t++) {
-                            n[k - 1 - _t].thisPoint.draw();
-                        }
-                        // record this segment
-                        Node newHead = new Node();
-                        SegmentsWithMinPoint segmentWithMinPoint = new SegmentsWithMinPoint();
-                        segmentWithMinPoint.segment = newSegment;
-
-                        // TODO: Remove draw segment
-                        StdDraw.setPenRadius(0.005);
-                        StdDraw.setPenColor(new Color(173, 216, 230));
-                        newSegment.draw();
-
-                        segmentWithMinPoint.minPoint = minPoint;
-                        segmentWithMinPoint.slope = minPoint.slopeTo(maxPoint);
-                        newHead.segmentWithMinPoint = segmentWithMinPoint;
-                        newHead.nextTowardsTail = this.head;
-                        this.head = newHead;
-                        this.size++;
+                        addSegment(points, i, n, startingPoint, k);
 
                     }
                     runningCounter = 1;
@@ -270,58 +218,48 @@ public class FastCollinearPoints {
             // in the loop above.
             int k = n.length;
             if (runningCounter >= 3) {
-                // TODO: Put this into a common function
-                LineSegment newSegment;
-                Point minPoint;
-                Point maxPoint;
-
-                // found 3 points which lie on a straight line through the reference point
-                // check whether the reference point lies on the end of the chosen points
-                // exploit the stability of mergesort to compare only two points
-                if (points[i].compareTo(startingPoint) == -1) {
-                    // reference point is the smallest in the points with the same slope
-                    newSegment = new LineSegment(points[i], n[k - 1].thisPoint);
-                    minPoint = points[i];
-                    maxPoint = n[k - 1].thisPoint;
-                } else if (points[i].compareTo(n[k - 1].thisPoint) == 1) {
-                    // reference point is the largest in the points with the same slope
-                    newSegment = new LineSegment(startingPoint, points[i]);
-                    minPoint = startingPoint;
-                    maxPoint = points[i];
-                } else {
-                    // reference point lies somewhere in between
-                    newSegment = new LineSegment(startingPoint, n[k - 1].thisPoint);
-                    minPoint = startingPoint;
-                    maxPoint = n[k - 1].thisPoint;
-                }
-
-                // TODO Remove the plotting statements
-                StdDraw.clear();
-                maxPoint.draw();
-                points[i].draw();
-                minPoint.draw();
-                for (int _t = 0; _t < runningCounter; _t++) {
-                    n[k - 1 - _t].thisPoint.draw();
-                }
-                // record this segment
-                Node newHead = new Node();
-                SegmentsWithMinPoint segmentWithMinPoint = new SegmentsWithMinPoint();
-                segmentWithMinPoint.segment = newSegment;
-
-                // TODO: Remove draw segment
-                StdDraw.setPenRadius(0.005);
-                StdDraw.setPenColor(new Color(173, 216, 230));
-                newSegment.draw();
-
-                segmentWithMinPoint.minPoint = minPoint;
-                segmentWithMinPoint.slope = minPoint.slopeTo(maxPoint);
-                newHead.segmentWithMinPoint = segmentWithMinPoint;
-                newHead.nextTowardsTail = this.head;
-                this.head = newHead;
-                this.size++;
+                addSegment(points, i, n, startingPoint, k);
             }
         }
 
+    }
+
+    private void addSegment(Point[] points, int i, Node[] n, Point startingPoint, int k) {
+        LineSegment newSegment;
+        Point minPoint;
+        Point maxPoint;
+
+        // found 3 points which lie on a straight line through the reference point
+        // check whether the reference point lies on the end of the chosen points
+        // exploit the stability of mergesort to compare only two points
+        if (points[i].compareTo(startingPoint) == -1) {
+            // reference point is the smallest in the points with the same slope
+            newSegment = new LineSegment(points[i], n[k - 1].thisPoint);
+            minPoint = points[i];
+            maxPoint = n[k - 1].thisPoint;
+        } else if (points[i].compareTo(n[k - 1].thisPoint) == 1) {
+            // reference point is the largest in the points with the same slope
+            newSegment = new LineSegment(startingPoint, points[i]);
+            minPoint = startingPoint;
+            maxPoint = points[i];
+        } else {
+            // reference point lies somewhere in between
+            newSegment = new LineSegment(startingPoint, n[k - 1].thisPoint);
+            minPoint = startingPoint;
+            maxPoint = n[k - 1].thisPoint;
+        }
+
+        // record this segment
+        Node newHead = new Node();
+        SegmentsWithMinPoint segmentWithMinPoint = new SegmentsWithMinPoint();
+        segmentWithMinPoint.segment = newSegment;
+
+        segmentWithMinPoint.minPoint = minPoint;
+        segmentWithMinPoint.slope = minPoint.slopeTo(maxPoint);
+        newHead.segmentWithMinPoint = segmentWithMinPoint;
+        newHead.nextTowardsTail = this.head;
+        this.head = newHead;
+        this.size++;
     }
 
     private boolean isAnyPointNull(Point[] points) {
