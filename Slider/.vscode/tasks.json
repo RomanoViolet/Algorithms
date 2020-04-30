@@ -1,0 +1,81 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Compile All Source Files",
+            "type": "shell",
+            "linux": {
+                "command": "${workspaceFolder}/BuildScripts/Java-Compile-All.sh"
+            },
+            "group": "build",
+            "problemMatcher": {
+                "owner": "java",
+                "fileLocation": "absolute",
+                "pattern": {
+                    "regexp": "^(.*):([0-9]+): (error|warning): (.*)$",
+                    "file": 1,
+                    "line": 2,
+                    "severity": 3,
+                    "message": 4
+                }
+            }
+        },
+        {
+            "label": "Run Spotbugs",
+            "type": "shell",
+            "linux": {
+                "command": "${workspaceFolder}/BuildScripts/Run-Spotbugs-All.sh"
+            },
+            "group": "build",
+            "problemMatcher": {
+                "owner": "java",
+                "fileLocation": "absolute",
+                "pattern": {
+                    "regexp": "^(.*):([0-9]+): (error|warning): (.*)$",
+                    "file": 1,
+                    "line": 2,
+                    "severity": 3,
+                    "message": 4
+                }
+            }
+        },
+        {
+            "label": "Run PMD",
+            "type": "shell",
+            "linux": {
+                "command": "${workspaceFolder}/BuildScripts/Run-PMD-All.sh"
+            },
+            "group": "build",
+            "problemMatcher": {
+                "owner": "java",
+                "fileLocation": "absolute",
+                "pattern": {
+                    "regexp": "^(.*):([0-9]+): (error|warning): (.*)$",
+                    "file": 1,
+                    "line": 2,
+                    "severity": 3,
+                    "message": 4
+                }
+            }
+        },
+        {
+            "label": "Run CheckStyle",
+            "type": "shell",
+            "linux": {
+                "command": "${workspaceFolder}/BuildScripts/Run-CheckStyle-All.sh"
+            },
+            "group": "build",
+            "problemMatcher": {
+                "owner": "java",
+                "fileLocation": "absolute",
+                "pattern": {
+                    "regexp": "^(.*):([0-9]+): (error|warning): (.*)$",
+                    "file": 1,
+                    "line": 2,
+                    "severity": 3,
+                    "message": 4
+                }
+            }
+        },
+    ]
+}

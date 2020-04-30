@@ -1,0 +1,47 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - Point",
+            "request": "launch",
+            "mainClass": "Point",
+            "projectName": "CollinearPoints",
+            "vmArgs": [
+                "-ea"
+            ]
+        },
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - Combination",
+            "request": "launch",
+            "mainClass": "Combination",
+            "projectName": "CollinearPoints",
+            "vmArgs": [
+                "-ea"
+            ]
+        },
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - Test",
+            "request": "launch",
+            "mainClass": "Test",
+            "projectName": "CollinearPoints",
+            "vmArgs": [
+                "-ea"
+            ],
+            "args": "< ${workspaceFolder}/Tests/random23.txt"
+        },
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - TestFastCollinearPoints",
+            "request": "launch",
+            "mainClass": "TestFastCollinearPoints",
+            "projectName": "CollinearPoints",
+            "vmArgs": [
+                "-ea"
+            ],
+            "args": "< ${workspaceFolder}/Tests/random23.txt"
+        }
+    ]
+}
