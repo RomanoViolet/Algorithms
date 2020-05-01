@@ -1,3 +1,4 @@
+
 public class Board {
 
     private int[][] tiles;
@@ -40,9 +41,51 @@ public class Board {
         return hammingDistance;
     }
 
+    private class TileCoordinates {
+        int row = 0;
+        int col = 0;
+    }
+
+    private TileCoordinates TileValueToExpectedAddress(int value) {
+        TileCoordinates coordinates = new TileCoordinates();
+
+        // rely on integer division
+        coordinates.row = (value / this.dimension);
+        coordinates.col = value - (coordinates.row * this.dimension);
+
+        return coordinates;
+
+    }
+
     // sum of Manhattan distances between tiles and goal
     public int manhattan() {
-        return 0;
+        // manhattan: error in row + error in col
+        int manhattanDistance = 0;
+        TileCoordinates expectedCoordinates;
+        int errorInRow = 0;
+        int errorInCol = 0;
+        for (int row = 0; row < this.dimension; ++row) {
+            for (int col = 0; col < this.dimension; ++col) {
+                if (this.tiles[row][col] == 0) {
+                    continue;
+                }
+                expectedCoordinates = this.TileValueToExpectedAddress(this.tiles[row][col]);
+                if (row > expectedCoordinates.row) {
+                    errorInRow = row - expectedCoordinates.row;
+                } else {
+                    errorInRow = expectedCoordinates.row - row;
+                }
+
+                if (col > expectedCoordinates.col) {
+                    errorInCol = col - expectedCoordinates.col;
+                } else {
+                    errorInCol = expectedCoordinates.col - col;
+                }
+
+                manhattanDistance = manhattanDistance + errorInCol + errorInRow;
+            }
+        }
+        return manhattanDistance;
     }
 
     // is this board the goal board?
