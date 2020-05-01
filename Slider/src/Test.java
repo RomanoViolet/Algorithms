@@ -13,7 +13,7 @@ public class Test {
         }
 
         Board b = new Board(tiles);
-        b.toString();
+        System.out.println("Hamming: " + b.hamming());
 
     }
 

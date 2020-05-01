@@ -26,19 +26,18 @@ public class Board {
     // number of tiles out of place
     public int hamming() {
         // expected tile value: (row*dimension) + (col) + 1
-        // row = 1, dimension = 3, col = 2, expected value: 6.
-        // row = 2, dimension = 3, col = 0, expected value: 7.
         int hammingDistance = 0;
         int expectedTileValue = 0;
-        for (int row = 0; row < this.dimension; ++row)
-        {
-            for (int col = 0; col < this.dimension; ++col)
-            {
+        for (int row = 0; row < this.dimension; ++row) {
+            for (int col = 0; col < this.dimension; ++col) {
+                if (this.tiles[row][col] == 0) {
+                    continue;
+                }
                 expectedTileValue = (row * this.dimension) + (col) + 1;
-                hammingDistance = hammingDistance + (row*this`)
+                hammingDistance = hammingDistance + ((expectedTileValue != this.tiles[row][col]) ? 1 : 0);
             }
         }
-        return 0;
+        return hammingDistance;
     }
 
     // sum of Manhattan distances between tiles and goal
