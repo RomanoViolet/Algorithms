@@ -3,6 +3,9 @@ public class Board {
 
     private int[][] tiles;
     private final int dimension;
+    private int manhattanDistance;
+    private int hammingDistance;
+    private Board[] neighboringBoards;
 
     // create a board from an n-by-n array of tiles,
     // where tiles[row][col] = tile at (row, col)
@@ -12,6 +15,8 @@ public class Board {
         }
         this.tiles = tiles.clone();
         this.dimension = this.tiles.length;
+        this.hammingDistance = this.computeHammingDistance();
+        this.manhattanDistance = this.computeManhattanDistance();
     }
 
     // string representation of this board
@@ -24,8 +29,12 @@ public class Board {
         return this.dimension;
     }
 
-    // number of tiles out of place
     public int hamming() {
+        return (this.hammingDistance);
+    }
+
+    // number of tiles out of place
+    private int computeHammingDistance() {
         // expected tile value: (row*dimension) + (col) + 1
         int hammingDistance = 0;
         int expectedTileValue = 0;
@@ -50,8 +59,8 @@ public class Board {
         TileCoordinates coordinates = new TileCoordinates();
 
         // rely on integer division
-        coordinates.row = (value / this.dimension);
-        coordinates.col = value - (coordinates.row * this.dimension);
+        coordinates.row = (value - 1) / this.dimension;
+        coordinates.col = value - (coordinates.row * this.dimension) - 1;
 
         return coordinates;
 
@@ -59,6 +68,10 @@ public class Board {
 
     // sum of Manhattan distances between tiles and goal
     public int manhattan() {
+        return (this.manhattanDistance);
+    }
+
+    private int computeManhattanDistance() {
         // manhattan: error in row + error in col
         int manhattanDistance = 0;
         TileCoordinates expectedCoordinates;
@@ -90,18 +103,36 @@ public class Board {
 
     // is this board the goal board?
     public boolean isGoal() {
-        return false;
+        return (this.hammingDistance == 0);
     }
 
     // does this board equal y?
     public boolean equals(Object y) {
-        return false;
+        if (y == this)
+            return true;
+        if (y == null)
+            return false;
+        if (y.getClass() != this.getClass())
+            return false;
+        Board that = (Board) y;
+
+        boolean areBoardsSame = true;
+        for (int row = 0; row < this.dimension; ++row) {
+            for (int col = 0; col < this.dimension; ++col) {
+                if (this.tiles[row][col] != that.tiles[row][col]) {
+                    areBoardsSame = false;
+                    break;
+                }
+            }
+        }
+
+        return areBoardsSame;
     }
 
-    // // all neighboring boards
-    // public Iterable<Board> neighbors() {
-
-    // }
+    // all neighboring boards
+    public Iterable<Board> neighbors() {
+        return (this.neighboringBoards);
+    }
 
     // // a board that is obtained by exchanging any pair of tiles
     // public Board twin() {

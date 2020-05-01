@@ -1,0 +1,186 @@
+/* for html page */
+
+.adrianheader {
+  font-size: 35px;
+  color: #1B66B0;
+  font-family: sans-serif;
+  font-weight:bold;
+  line-height:100px;
+  vertical-align: top;
+  padding: 20px;
+}
+
+div.statusWindow {
+  text-align: left;
+}
+
+div.canvasWrapper {
+  position : absolute
+}
+
+a.svgDownloader {
+    position: absolute;
+    bottom: 0px;
+    left:  0px;
+}
+
+div.Legende {
+    position: absolute;
+    height: auto;
+    bottom: 0px;
+    right:  0px;
+}
+
+div.LegendeMinimized {
+    position: absolute;
+    bottom: 0px;
+    right:  0px;
+}
+
+td.algoInfoTD {
+  border-radius: 50%;
+  background-clip: content-box;
+}
+
+h3.pq_hidden {
+    font-family: "arial";
+    font-weight: bold;
+    font-size: 12px;
+    text-align: left;
+    color: #333333;
+    line-height: 16px;
+    display: none;
+    padding-left: 18px;
+}
+
+p.question {
+    font-family: "arial";
+    font-size: 15px;
+    color: #C4071B;
+    line-height: 16px;
+}
+
+div.LegendeText {
+    padding: 10px;
+    padding-top: 0px;
+    line-height: 16px;
+}
+div.tabOutroDialog span{
+    text-align: left;
+}
+
+.ui_tabOutroDialog_center button{
+    padding-left: 3em;
+    padding-right: 3em;
+}
+
+td { 
+    padding: 5px; 
+}
+
+.fig {
+    text-align: center;
+}
+
+figcaption {
+    text-align: center;
+}
+
+#picTitle{
+    height: 80px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+#figTitle{
+    margin-left: 150px;
+    margin-top: 33px;
+    margin-bottom: 33px;
+}
+
+#tumTitle{
+    position:absolute; right:0px;
+    margin-top: 25px;
+    margin-bottom: 25px;
+}
+
+#ta_sum {
+    border-bottom-style: 1px solid;
+}
+
+.heuristic_value {
+    text-align: right;
+}
+
+#tf1_div_statusTabs {
+    height: 415px;
+}
+
+#tf2_div_statusTabs {
+    height: 415px;
+}
+
+#tf1_div_statusErklaerung {
+    text-align: left;
+    padding-top: 10px;
+}
+
+#tf2_div_statusErklaerung {
+    text-align: left;
+    padding-top: 10px;
+}
+
+#tf3_div_statusErklaerung {
+    text-align: left;
+    padding-top: 10px;
+}
+
+#tf2_div_Frage {
+    text-align: left;
+}
+
+#tf2_div_Antworten {
+    text-align: left;
+    padding-top: 5px;
+}
+
+#ta_div_statusTabs {
+    height: 415px;
+}
+
+#ta_div_PQ {
+    position: absolute;
+    bottom: -115px;
+    width: 100%;
+}
+
+#tf1_div_PQ {
+    position: absolute;
+    bottom: -100px;
+    width: 100%;
+}
+
+#tf2_div_PQ {
+    position: absolute;
+    bottom: -115px;
+    width: 100%;
+}
+
+#ta_title_pq {
+    margin-bottom: 0px;
+}
+
+#tf2_div_statusTabs .ui-widget-header {
+    background: transparent; 
+    border: none;
+} 
+#tf2_div_statusTabs .ui-tabs-nav li.ui-state-default { 
+    background: transparent; 
+    border: 1px solid #c0c0c0;
+} 
+
+#tf2_div_statusTabs .ui-tabs-nav li.ui-state-active { 
+    background: transparent; 
+    border-bottom: none;
+}
+

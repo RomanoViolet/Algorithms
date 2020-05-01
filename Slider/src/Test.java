@@ -13,6 +13,7 @@ public class Test {
         }
 
         Board b = new Board(tiles);
+        System.out.println("Hamming: " + b.hamming());
         System.out.println("Manhattan: " + b.manhattan());
 
     }
