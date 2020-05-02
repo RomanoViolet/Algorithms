@@ -1,11 +1,14 @@
 
+import edu.princeton.cs.algs4.Bag
+
 public class Board {
 
     private int[][] tiles;
     private final int dimension;
     private int manhattanDistance;
     private int hammingDistance;
-    private Board[] neighboringBoards;
+    private Bag<Board> neighboringBoards;
+    private TileCoordinates locationOfZero; // the empty space in the puzzle
 
     // create a board from an n-by-n array of tiles,
     // where tiles[row][col] = tile at (row, col)
@@ -38,15 +41,19 @@ public class Board {
         // expected tile value: (row*dimension) + (col) + 1
         int hammingDistance = 0;
         int expectedTileValue = 0;
+        TileCoordinates locationOfZero = new TileCoordinates();
         for (int row = 0; row < this.dimension; ++row) {
             for (int col = 0; col < this.dimension; ++col) {
                 if (this.tiles[row][col] == 0) {
+                    locationOfZero.col = col;
+                    locationOfZero.row = row;
                     continue;
                 }
                 expectedTileValue = (row * this.dimension) + (col) + 1;
                 hammingDistance = hammingDistance + ((expectedTileValue != this.tiles[row][col]) ? 1 : 0);
             }
         }
+        this.locationOfZero = locationOfZero;
         return hammingDistance;
     }
 
@@ -127,6 +134,29 @@ public class Board {
         }
 
         return areBoardsSame;
+    }
+
+    private Bag<Board> allNeighbors() {
+        Bag<Board> neighbors;
+
+        //
+        // Model this as the blank "moving" left, right, top, or bottom.
+        //
+
+        // blank tile located on the top left corner
+        if ((this.locationOfZero.col == 0) && (this.locationOfZero.row == 0)) {
+            // New Board: Move tile from (0,1) to (0,0)
+            // New Board: Move tile from (1,0) to (0,0)
+        }
+
+        // blank tile on the bottom left corner
+        if ((this.locationOfZero.col == 0) && (this.locationOfZero.row == this.dimension - 1)) {
+            // New Board: Move tile from (this.dimension-2,0) to (this.dimension-1,0)
+            // New Board: Move tile from (this.dimension-1,1) to (this.dimension-1,0)
+        }
+
+        // blank tile on the left edge
+
     }
 
     // all neighboring boards
