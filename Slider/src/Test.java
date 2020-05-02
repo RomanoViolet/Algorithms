@@ -15,6 +15,12 @@ public class Test {
         Board b = new Board(tiles);
         System.out.println("Hamming: " + b.hamming());
         System.out.println("Manhattan: " + b.manhattan());
+        System.out.println(b.toString());
+
+        for (Board newBoard : b.neighbors()) {
+            System.out.println("Neighbor: ");
+            System.out.println(newBoard.toString());
+        }
 
     }
 
