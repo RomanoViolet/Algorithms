@@ -3,14 +3,44 @@ import edu.princeton.cs.algs4.SET;
 
 public class Solver {
     private Board startingBoard;
-    private MinPQ<ComparableBoard> openList;
+    private SearchableMinPQ openList;
     // private Bag<ComparableBoard> closedList;
     private SET<ComparableBoard> closedList;
 
     // TODO Searchable OpenList which will:
     // A. provide the lowest cost board with min
     // B. answer whether an object is already in stored.
+    // TODO: Create a generic SearchablePQ
     private class SearchableMinPQ {
+        private MinPQ<ComparableBoard> priorityQueueList;
+        private SET<ComparableBoard> searchList;
+
+        public SearchableMinPQ() {
+        }
+
+        public void insert(ComparableBoard board) {
+            this.priorityQueueList.insert(board);
+            this.searchList.add(board);
+        }
+
+        public boolean contains(ComparableBoard board) {
+            return (this.searchList.contains(board));
+        }
+
+        // return the minimum key and remove it from the storage
+        public ComparableBoard extractMin() {
+            ComparableBoard result = this.priorityQueueList.min();
+            this.priorityQueueList.delMin();
+            this.searchList.delete(result);
+            return (result);
+        }
+
+        public boolean isEmpty() {
+            assert (this.priorityQueueList.isEmpty() == this.searchList
+                    .isEmpty()) : "Search and Priority lists do not have identical contents";
+            return (this.priorityQueueList.isEmpty());
+
+        }
 
     }
 
@@ -82,11 +112,10 @@ public class Solver {
         // exploration
         while (!this.openList.isEmpty()) {
             // pick out the cheapest from the open list
-            ComparableBoard current = this.openList.min();
+            ComparableBoard current = this.openList.extractMin();
 
             // put the current to closed list
             this.closedList.add(current);
-            this.openList.delMin();
 
             // check for termination
             if (current.thisBoard.manhattan() == 0) {
@@ -113,7 +142,10 @@ public class Solver {
                 // f-cost is updated when updateGCost is called.
 
                 // Is thisNeighbor in the openList already?
-                if (this.openList.
+                if (this.openList.contains(thisNeighbor) && ())
+                {
+                    //
+                }
 
                 // thisNeighbor.updateGCost();
 
