@@ -16,6 +16,7 @@ public class Test {
         System.out.println("Hamming: " + b.hamming());
         System.out.println("Manhattan: " + b.manhattan());
         System.out.println(b.toString());
+        System.out.println("Twin:\n" + b.twin().toString());
 
         for (Board newBoard : b.neighbors()) {
             System.out.println("Neighbor: ");

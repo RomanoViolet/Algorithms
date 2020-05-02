@@ -1,6 +1,4 @@
-
 import java.util.Arrays;
-
 import edu.princeton.cs.algs4.Bag;
 
 public class Board {
