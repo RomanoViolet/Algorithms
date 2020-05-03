@@ -15,9 +15,6 @@ public class Solver {
         private MinPQ<ComparableBoard> priorityQueueList;
         private SET<ComparableBoard> searchList;
 
-        public SearchableMinPQ() {
-        }
-
         public void insert(ComparableBoard board) {
             this.priorityQueueList.insert(board);
             this.searchList.add(board);
@@ -142,9 +139,14 @@ public class Solver {
                 // f-cost is updated when updateGCost is called.
 
                 // Is thisNeighbor in the openList already?
-                if (this.openList.contains(thisNeighbor) && ())
-                {
-                    //
+                if (this.openList.contains(thisNeighbor) && (thisNeighbor.getGCost() > newGScore)) {
+                    // Found a cheaper route to this neighbor
+                    thisNeighbor.updateGCost(newGScore);
+                } else {
+                    // add it to the open list
+                    this.openList.insert(thisNeighbor);
+
+                    // TODO Mark the parent of thisNeighbor
                 }
 
                 // thisNeighbor.updateGCost();
