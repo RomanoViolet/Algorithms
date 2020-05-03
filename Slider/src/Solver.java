@@ -6,41 +6,62 @@ public class Solver {
     private boolean solved = false;
     private int totalSteps = 0;
     private Board startingBoard;
-    private SearchableMinPQ openList;
+    private SearchableMinPQ list = new SearchableMinPQ();
     // private Bag<ComparableBoard> closedList;
-    private SET<ComparableBoard> closedList;
-    private Stack<Board> trace;
+    // private SET<ComparableBoard> closedList = new SET<ComparableBoard>();
+    private Stack<Board> trace = new Stack<Board>();
 
     // TODO Searchable OpenList which will:
     // A. provide the lowest cost board with min
     // B. answer whether an object is already in stored.
     // TODO: Create a generic SearchablePQ
     private class SearchableMinPQ {
-        private MinPQ<ComparableBoard> priorityQueueList;
-        private SET<ComparableBoard> searchList;
+        private MinPQ<ComparableBoard> priorityQueueList = new MinPQ<ComparableBoard>();
+        private SET<String> searcheableOpenList = new SET<String>();
+        private SET<String> closedList = new SET<String>();
 
         public void insert(ComparableBoard board) {
+            // insert only in the open list
             this.priorityQueueList.insert(board);
-            this.searchList.add(board);
+            this.searcheableOpenList.add(board.thisBoard.toString());
         }
 
         public boolean contains(ComparableBoard board) {
-            return (this.searchList.contains(board));
+            return (this.searcheableOpenList.contains(board.thisBoard.toString()));
         }
 
         // return the minimum key and remove it from the storage
         public ComparableBoard extractMin() {
+
+            // TODO Remove after debugging
+            System.out.printf("%s", "Available Node Costs:");
+            for (ComparableBoard b : this.priorityQueueList) {
+                System.out.printf("%d ", b.getFCost());
+            }
+            System.out.println("");
+
             ComparableBoard result = this.priorityQueueList.min();
             this.priorityQueueList.delMin();
-            this.searchList.delete(result);
+            this.searcheableOpenList.delete(result.thisBoard.toString());
             return (result);
         }
 
         public boolean isEmpty() {
-            assert (this.priorityQueueList.isEmpty() == this.searchList
+            assert (this.priorityQueueList.isEmpty() == this.searcheableOpenList
                     .isEmpty()) : "Search and Priority lists do not have identical contents";
             return (this.priorityQueueList.isEmpty());
 
+        }
+
+        public void addToClosedNodes(ComparableBoard board) {
+            this.closedList.add(board.thisBoard.toString());
+
+            // TODO Remove after debugging
+            System.out.println("Elements in Closed List: " + this.closedList.size());
+        }
+
+        public boolean closedListContains(ComparableBoard board) {
+            return (this.closedList.contains(board.thisBoard.toString()));
         }
 
     }
@@ -49,8 +70,8 @@ public class Solver {
     // wraps the Board datatype to have cost function and pointer to parent.
     private class ComparableBoard implements Comparable<ComparableBoard> {
         // costs
-        int f = 0;
-        int g = Integer.MAX_VALUE;
+        int f = Integer.MAX_VALUE;
+        int g = 0;
         int h = 0;
         private Board thisBoard;
         private ComparableBoard previousBoard;
@@ -80,6 +101,7 @@ public class Solver {
         public ComparableBoard(Board thisBoard) {
             this.thisBoard = thisBoard;
             this.previousBoard = null;
+            this.updateHCost();
         }
 
         public int getFCost() {
@@ -102,7 +124,7 @@ public class Solver {
     private Stack<Board> traceAllBoards(ComparableBoard current) {
         Stack<Board> trace = new Stack<Board>();
         ComparableBoard currentBoard = current;
-        while (currentBoard.thisBoard != null) {
+        while (currentBoard != null && currentBoard.thisBoard != null) {
             trace.push(currentBoard.thisBoard);
             currentBoard = currentBoard.previousBoard;
         }
@@ -124,15 +146,16 @@ public class Solver {
         startBoard.updateGCost(0);
 
         // insert the starting board into the openlist
-        this.openList.insert(startBoard);
+        this.list.insert(startBoard);
 
         // exploration
-        while (!this.openList.isEmpty()) {
+        while (!this.list.isEmpty()) {
+
             // pick out the cheapest from the open list
-            ComparableBoard current = this.openList.extractMin();
+            ComparableBoard current = this.list.extractMin();
 
             // put the current to closed list
-            this.closedList.add(current);
+            this.list.addToClosedNodes(current);
 
             // check for termination
             if (current.thisBoard.manhattan() == 0) {
@@ -143,15 +166,24 @@ public class Solver {
                 break;
             }
 
+            // TODO Remove all debugging
+            System.out.println("Current: \n" + current.thisBoard.toString());
+            System.out.println("Manhattan: " + current.thisBoard.manhattan());
+
             ComparableBoard thisNeighbor;
             for (Board b : current.thisBoard.neighbors()) {
                 // for each of the neighbors
                 thisNeighbor = new ComparableBoard(b, current.thisBoard);
 
                 // is thisNeighbor in closedList?
-                if (this.closedList.contains(thisNeighbor)) {
+                if (this.list.closedListContains(thisNeighbor)) {
                     // skip this neighbor
                     // assume consistent and valid cost function.
+
+                    // TODO: Remove after debugging
+                    // System.out.println("Neighbor closed:\n" + thisNeighbor.thisBoard.toString());
+                    System.out.println("Neighbor closed");
+
                     continue;
                 }
 
@@ -162,14 +194,20 @@ public class Solver {
                 // f-cost is updated when updateGCost is called.
 
                 // Is thisNeighbor in the openList already?
-                if (this.openList.contains(thisNeighbor) && (thisNeighbor.getGCost() > newGScore)) {
+                if (this.list.contains(thisNeighbor) && (thisNeighbor.getGCost() > newGScore)) {
                     // Found a cheaper route to this neighbor
                     thisNeighbor.updateGCost(newGScore);
                 } else {
                     // add it to the open list
-                    this.openList.insert(thisNeighbor);
+                    thisNeighbor.updateGCost(newGScore);
                     thisNeighbor.previousBoard = current;
+                    this.list.insert(thisNeighbor);
                 }
+
+                // TODO: Remove after debugging
+                // System.out.println("---\nNeighbor:\n" + thisNeighbor.thisBoard.toString());
+                // System.out.println("Cost of Neighbor:\n" + thisNeighbor.getFCost() +
+                // "\n---\n");
 
                 // thisNeighbor.updateGCost();
 

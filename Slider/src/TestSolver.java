@@ -14,7 +14,7 @@ public class TestSolver {
         Board board = new Board(tiles);
         Solver s = new Solver(board);
         for (Board b : s.solution()) {
-            b.toString();
+            System.out.println(b.toString());
         }
 
     }
