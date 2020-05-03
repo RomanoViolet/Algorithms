@@ -1,11 +1,15 @@
 import edu.princeton.cs.algs4.MinPQ;
 import edu.princeton.cs.algs4.SET;
+import edu.princeton.cs.algs4.Stack;
 
 public class Solver {
+    private boolean solved = false;
+    private int totalSteps = 0;
     private Board startingBoard;
     private SearchableMinPQ openList;
     // private Bag<ComparableBoard> closedList;
     private SET<ComparableBoard> closedList;
+    private Stack<Board> trace;
 
     // TODO Searchable OpenList which will:
     // A. provide the lowest cost board with min
@@ -49,7 +53,7 @@ public class Solver {
         int g = Integer.MAX_VALUE;
         int h = 0;
         private Board thisBoard;
-        private Board previousBoard;
+        private ComparableBoard previousBoard;
 
         public void updateGCost(int gCost) {
             this.g = gCost;
@@ -68,7 +72,7 @@ public class Solver {
 
         public ComparableBoard(Board thisBoard, Board previousBoard) {
             this.thisBoard = thisBoard;
-            this.previousBoard = previousBoard;
+            this.previousBoard = new ComparableBoard(previousBoard);
             this.updateHCost();
 
         }
@@ -95,9 +99,25 @@ public class Solver {
         }
     }
 
+    private Stack<Board> traceAllBoards(ComparableBoard current) {
+        Stack<Board> trace = new Stack<Board>();
+        ComparableBoard currentBoard = current;
+        while (currentBoard.thisBoard != null) {
+            trace.push(currentBoard.thisBoard);
+            currentBoard = currentBoard.previousBoard;
+        }
+
+        return trace;
+
+    }
+
     // find a solution to the initial board (using the A* algorithm)
     public Solver(Board initial) {
+        if (initial == null) {
+            throw new IllegalArgumentException("No initial board provided for the solver");
+        }
         this.startingBoard = initial;
+        this.solved = false;
 
         // wrap the board into ComparableBoard
         ComparableBoard startBoard = new ComparableBoard(this.startingBoard);
@@ -117,6 +137,9 @@ public class Solver {
             // check for termination
             if (current.thisBoard.manhattan() == 0) {
                 // solved the puzzle.
+                this.solved = true;
+                this.totalSteps = current.getGCost();
+                this.trace = traceAllBoards(current);
                 break;
             }
 
@@ -145,8 +168,7 @@ public class Solver {
                 } else {
                     // add it to the open list
                     this.openList.insert(thisNeighbor);
-
-                    // TODO Mark the parent of thisNeighbor
+                    thisNeighbor.previousBoard = current;
                 }
 
                 // thisNeighbor.updateGCost();
@@ -158,17 +180,17 @@ public class Solver {
 
     // is the initial board solvable? (see below)
     public boolean isSolvable() {
-
+        return (this.solved);
     }
 
     // min number of moves to solve initial board
     public int moves() {
-
+        return (this.totalSteps);
     }
 
     // sequence of boards in a shortest solution
     public Iterable<Board> solution() {
-
+        return (this.trace);
     }
 
     // test client (see below)
