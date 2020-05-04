@@ -5,17 +5,46 @@ import edu.princeton.cs.algs4.Stack;
 public class Solver {
     private boolean solved = false;
     private int totalSteps = 0;
-    private Board startingBoard;
+    private final Board startingBoard;
     private SearchableMinPQ list = new SearchableMinPQ();
     private SearchableMinPQ twinList = new SearchableMinPQ();
-    // private Bag<ComparableBoard> closedList;
-    // private SET<ComparableBoard> closedList = new SET<ComparableBoard>();
     private Stack<Board> trace = new Stack<Board>();
 
-    // TODO Searchable OpenList which will:
-    // A. provide the lowest cost board with min
-    // B. answer whether an object is already in stored.
-    // TODO: Create a generic SearchablePQ
+    // find a solution to the initial board (using the A* algorithm)
+    public Solver(Board initial) {
+        if (initial == null) {
+            throw new IllegalArgumentException("No initial board provided for the solver");
+        }
+        this.startingBoard = initial;
+        this.solved = false;
+
+        // wrap the board into ComparableBoard
+        ComparableBoard startBoard = new ComparableBoard(this.startingBoard);
+        startBoard.updateGCost(0);
+
+        // insert the starting board into the openlist
+        this.list.insert(startBoard);
+
+        // twin
+        Board twin = this.startingBoard.twin();
+
+        ComparableBoard twinBoard = new ComparableBoard(twin);
+        twinBoard.updateGCost(0);
+
+        // insert the twin board into the openlist
+        this.twinList.insert(twinBoard);
+
+        boolean localSolved = false;
+        boolean twinSolved = false;
+        while (!localSolved && !twinSolved) {
+            localSolved = solve(this.list);
+            twinSolved = solve(this.twinList);
+        }
+
+        this.solved = localSolved;
+
+    }
+
     private class SearchableMinPQ {
         private MinPQ<ComparableBoard> priorityQueueList = new MinPQ<ComparableBoard>();
         private SET<String> searcheableOpenList = new SET<String>();
@@ -25,8 +54,7 @@ public class Solver {
             // insert only in the open list
             this.priorityQueueList.insert(board);
             this.searcheableOpenList.add(board.thisBoard.toString());
-            // System.out.println("Elements in Open List: " +
-            // this.priorityQueueList.size());
+
         }
 
         public boolean contains(ComparableBoard board) {
@@ -35,13 +63,6 @@ public class Solver {
 
         // return the minimum key and remove it from the storage
         public ComparableBoard extractMin() {
-
-            // TODO Remove after debugging
-            // System.out.printf("%s", "Available Node Costs:");
-            // for (ComparableBoard b : this.priorityQueueList) {
-            // System.out.printf("%d ", b.getFCost());
-            // }
-            // System.out.println("");
 
             ComparableBoard result = this.priorityQueueList.min();
             this.priorityQueueList.delMin();
@@ -58,9 +79,6 @@ public class Solver {
 
         public void addToClosedNodes(ComparableBoard board) {
             this.closedList.add(board.thisBoard.toString());
-
-            // TODO Remove after debugging
-            // System.out.println("Elements in Closed List: " + this.closedList.size());
         }
 
         public boolean closedListContains(ComparableBoard board) {
@@ -79,6 +97,19 @@ public class Solver {
         private Board thisBoard;
         private ComparableBoard previousBoard;
 
+        public ComparableBoard(Board thisBoard) {
+            this.thisBoard = thisBoard;
+            this.previousBoard = null;
+            this.updateHCost();
+        }
+
+        public ComparableBoard(Board thisBoard, Board previousBoard) {
+            this.thisBoard = thisBoard;
+            this.previousBoard = new ComparableBoard(previousBoard);
+            this.updateHCost();
+
+        }
+
         public void updateGCost(int gCost) {
             this.g = gCost;
 
@@ -92,19 +123,6 @@ public class Solver {
 
         public int getGCost() {
             return (this.g);
-        }
-
-        public ComparableBoard(Board thisBoard, Board previousBoard) {
-            this.thisBoard = thisBoard;
-            this.previousBoard = new ComparableBoard(previousBoard);
-            this.updateHCost();
-
-        }
-
-        public ComparableBoard(Board thisBoard) {
-            this.thisBoard = thisBoard;
-            this.previousBoard = null;
-            this.updateHCost();
         }
 
         public int getFCost() {
@@ -125,65 +143,26 @@ public class Solver {
     }
 
     private Stack<Board> traceAllBoards(ComparableBoard current) {
-        Stack<Board> trace = new Stack<Board>();
+        Stack<Board> localTrace = new Stack<Board>();
         ComparableBoard currentBoard = current;
         while (currentBoard != null && currentBoard.thisBoard != null) {
-            trace.push(currentBoard.thisBoard);
+            localTrace.push(currentBoard.thisBoard);
             currentBoard = currentBoard.previousBoard;
         }
 
-        return trace;
+        return localTrace;
 
     }
 
-    // find a solution to the initial board (using the A* algorithm)
-    public Solver(Board initial) {
-        if (initial == null) {
-            throw new IllegalArgumentException("No initial board provided for the solver");
-        }
-        this.startingBoard = initial;
-        this.solved = false;
-
-        // wrap the board into ComparableBoard
-        ComparableBoard startBoard = new ComparableBoard(this.startingBoard);
-        startBoard.updateGCost(0);
-
-        // insert the starting board into the openlist
-        this.list.insert(startBoard);
-
-        // twin
-        Board twin = this.startingBoard.twin();
-
-        // TODO Remove after debugging
-        // System.out.println("Original Board:\n" + this.startingBoard.toString());
-        // System.out.println("Twin Board:\n" + twin.toString());
-
-        ComparableBoard twinBoard = new ComparableBoard(twin);
-        twinBoard.updateGCost(0);
-
-        // insert the twin board into the openlist
-        this.twinList.insert(twinBoard);
-
-        boolean solved = false;
-        boolean twinSolved = false;
-        while (!solved && !twinSolved) {
-            solved = solve(this.list);
-            twinSolved = solve(this.twinList);
-        }
-
-        this.solved = solved;
-
-    }
-
-    private boolean solve(SearchableMinPQ list) {
+    private boolean solve(SearchableMinPQ listArg) {
         // exploration
-        if (!list.isEmpty()) {
+        if (!listArg.isEmpty()) {
 
             // pick out the cheapest from the open list
-            ComparableBoard current = list.extractMin();
+            ComparableBoard current = listArg.extractMin();
 
             // put the current to closed list
-            list.addToClosedNodes(current);
+            listArg.addToClosedNodes(current);
 
             // check for termination
             if (current.thisBoard.manhattan() == 0) {
@@ -194,24 +173,15 @@ public class Solver {
                 return (true);
             }
 
-            // TODO Remove all debugging
-            // System.out.println("Current: \n" + current.thisBoard.toString());
-            // System.out.println("Manhattan: " + current.thisBoard.manhattan());
-
             ComparableBoard thisNeighbor;
             for (Board b : current.thisBoard.neighbors()) {
                 // for each of the neighbors
                 thisNeighbor = new ComparableBoard(b, current.thisBoard);
 
                 // is thisNeighbor in closedList?
-                if (list.closedListContains(thisNeighbor)) {
+                if (listArg.closedListContains(thisNeighbor)) {
                     // skip this neighbor
                     // assume consistent and valid cost function.
-
-                    // TODO: Remove after debugging
-                    // System.out.println("Neighbor closed:\n" + thisNeighbor.thisBoard.toString());
-                    // System.out.println("Neighbor closed");
-
                     continue;
                 }
 
@@ -222,22 +192,15 @@ public class Solver {
                 // f-cost is updated when updateGCost is called.
 
                 // Is thisNeighbor in the openList already?
-                if (list.contains(thisNeighbor) && (thisNeighbor.getGCost() > newGScore)) {
+                if (listArg.contains(thisNeighbor) && (thisNeighbor.getGCost() > newGScore)) {
                     // Found a cheaper route to this neighbor
                     thisNeighbor.updateGCost(newGScore);
                 } else {
                     // add it to the open list
                     thisNeighbor.updateGCost(newGScore);
                     thisNeighbor.previousBoard = current;
-                    list.insert(thisNeighbor);
+                    listArg.insert(thisNeighbor);
                 }
-
-                // TODO: Remove after debugging
-                // System.out.println("---\nNeighbor:\n" + thisNeighbor.thisBoard.toString());
-                // System.out.println("Cost of Neighbor:\n" + thisNeighbor.getFCost() +
-                // "\n---\n");
-
-                // thisNeighbor.updateGCost();
 
             }
         }
@@ -261,6 +224,6 @@ public class Solver {
 
     // test client (see below)
     public static void main(String[] args) {
-
+        // intentionally left empty
     }
 }

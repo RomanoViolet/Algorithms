@@ -3,10 +3,10 @@ import edu.princeton.cs.algs4.Bag;
 
 public class Board {
 
-    private int[][] tiles;
+    private final int[][] tiles;
     private final int dimension;
-    private int manhattanDistance;
-    private int hammingDistance;
+    private final int manhattanDistance;
+    private final int hammingDistance;
     private Bag<Board> neighboringBoards;
     private TileCoordinates locationOfZero; // the empty space in the puzzle
 
@@ -25,16 +25,17 @@ public class Board {
 
     // string representation of this board
     public String toString() {
-        String result = new String();
-        result = this.dimension + "\n";
+        // String result = new String("");
+        StringBuilder result = new StringBuilder();
+        result.append(this.dimension + "\n");
         for (int row = 0; row < this.dimension; ++row) {
             for (int col = 0; col < this.dimension; ++col) {
-                result = result + (this.tiles[row][col]) + " ";
+                result.append((this.tiles[row][col]) + " ");
             }
-            result = result + "\n";
+            result.append("\n");
         }
 
-        return (result);
+        return (result.toString());
     }
 
     // board dimension n
@@ -49,22 +50,22 @@ public class Board {
     // number of tiles out of place
     private int computeHammingDistance() {
         // expected tile value: (row*dimension) + (col) + 1
-        int hammingDistance = 0;
+        int localHammingDistance = 0;
         int expectedTileValue = 0;
-        TileCoordinates locationOfZero = new TileCoordinates();
+        TileCoordinates localLocationOfZero = new TileCoordinates();
         for (int row = 0; row < this.dimension; ++row) {
             for (int col = 0; col < this.dimension; ++col) {
                 if (this.tiles[row][col] == 0) {
-                    locationOfZero.col = col;
-                    locationOfZero.row = row;
+                    localLocationOfZero.col = col;
+                    localLocationOfZero.row = row;
                     continue;
                 }
                 expectedTileValue = (row * this.dimension) + (col) + 1;
-                hammingDistance = hammingDistance + ((expectedTileValue != this.tiles[row][col]) ? 1 : 0);
+                localHammingDistance = localHammingDistance + ((expectedTileValue != this.tiles[row][col]) ? 1 : 0);
             }
         }
-        this.locationOfZero = locationOfZero;
-        return hammingDistance;
+        this.locationOfZero = localLocationOfZero;
+        return localHammingDistance;
     }
 
     private class TileCoordinates {
@@ -72,7 +73,7 @@ public class Board {
         int col = 0;
     }
 
-    private TileCoordinates TileValueToExpectedAddress(int value) {
+    private TileCoordinates tileValueToExpectedAddress(int value) {
         TileCoordinates coordinates = new TileCoordinates();
 
         // rely on integer division
@@ -90,7 +91,7 @@ public class Board {
 
     private int computeManhattanDistance() {
         // manhattan: error in row + error in col
-        int manhattanDistance = 0;
+        int localManhattanDistance = 0;
         TileCoordinates expectedCoordinates;
         int errorInRow = 0;
         int errorInCol = 0;
@@ -99,7 +100,7 @@ public class Board {
                 if (this.tiles[row][col] == 0) {
                     continue;
                 }
-                expectedCoordinates = this.TileValueToExpectedAddress(this.tiles[row][col]);
+                expectedCoordinates = this.tileValueToExpectedAddress(this.tiles[row][col]);
                 if (row > expectedCoordinates.row) {
                     errorInRow = row - expectedCoordinates.row;
                 } else {
@@ -112,10 +113,10 @@ public class Board {
                     errorInCol = expectedCoordinates.col - col;
                 }
 
-                manhattanDistance = manhattanDistance + errorInCol + errorInRow;
+                localManhattanDistance = localManhattanDistance + errorInCol + errorInRow;
             }
         }
-        return manhattanDistance;
+        return localManhattanDistance;
     }
 
     // is this board the goal board?
@@ -208,7 +209,7 @@ public class Board {
     }
 
     private Bag<Board> allNeighbors() {
-        Bag<Board> neighboringBoards = new Bag<Board>();
+        Bag<Board> localNeighboringBoards = new Bag<Board>();
         //
         // Model this as the blank "moving" left, right, top, or bottom.
         //
@@ -216,27 +217,27 @@ public class Board {
         // move blank down
         Board blankDown = this.moveBlankDown();
         if (blankDown != null) {
-            neighboringBoards.add(blankDown);
+            localNeighboringBoards.add(blankDown);
         }
 
         // move blank up
         Board blankUp = this.moveBlankUp();
         if (blankUp != null) {
-            neighboringBoards.add(blankUp);
+            localNeighboringBoards.add(blankUp);
         }
 
         // move blank left
         Board blankLeft = this.moveBlankLeft();
         if (blankLeft != null) {
-            neighboringBoards.add(blankLeft);
+            localNeighboringBoards.add(blankLeft);
         }
 
         // move blank right
         Board blankRight = this.moveBlankRight();
         if (blankRight != null) {
-            neighboringBoards.add(blankRight);
+            localNeighboringBoards.add(blankRight);
         }
-        return (neighboringBoards);
+        return (localNeighboringBoards);
     }
 
     // all neighboring boards
@@ -263,17 +264,8 @@ public class Board {
             temp = newTiles[0][this.dimension - 2];
             newTiles[0][this.dimension - 2] = newTiles[0][this.dimension - 1];
             newTiles[0][this.dimension - 1] = temp;
-        }
-
-        // if the zero is on the right edge
-        else if (this.locationOfZero.col == this.dimension - 1) {
-            // swap tile(0, 0) with tile (0, 1)
-            temp = newTiles[0][1];
-            newTiles[0][1] = newTiles[0][0];
-            newTiles[0][0] = temp;
-
         } else {
-            // zero in neither on left nor on right edge.
+            // zero is not on the left edge.
             // swap tile(0, 0) with tile (0, 1)
             // this is the same as in condition above. Will be refactored to avoid code
             // duplication.
@@ -289,7 +281,7 @@ public class Board {
 
     // unit testing (not graded)
     public static void main(String[] args) {
-
+        // intentionally left empty
     }
 
 }
