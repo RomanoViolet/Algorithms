@@ -155,8 +155,8 @@ public class Solver {
         Board twin = this.startingBoard.twin();
 
         // TODO Remove after debugging
-        System.out.println("Original Board:\n" + this.startingBoard.toString());
-        System.out.println("Twin Board:\n" + twin.toString());
+        // System.out.println("Original Board:\n" + this.startingBoard.toString());
+        // System.out.println("Twin Board:\n" + twin.toString());
 
         ComparableBoard twinBoard = new ComparableBoard(twin);
         twinBoard.updateGCost(0);
@@ -170,6 +170,8 @@ public class Solver {
             solved = solve(this.list);
             twinSolved = solve(this.twinList);
         }
+
+        this.solved = solved;
 
     }
 
@@ -186,7 +188,7 @@ public class Solver {
             // check for termination
             if (current.thisBoard.manhattan() == 0) {
                 // solved the puzzle.
-                this.solved = true;
+                // this.solved = true;
                 this.totalSteps = current.getGCost();
                 this.trace = traceAllBoards(current);
                 return (true);
