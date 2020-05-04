@@ -24,6 +24,8 @@ public class Solver {
             // insert only in the open list
             this.priorityQueueList.insert(board);
             this.searcheableOpenList.add(board.thisBoard.toString());
+            // System.out.println("Elements in Open List: " +
+            // this.priorityQueueList.size());
         }
 
         public boolean contains(ComparableBoard board) {
@@ -34,11 +36,11 @@ public class Solver {
         public ComparableBoard extractMin() {
 
             // TODO Remove after debugging
-            System.out.printf("%s", "Available Node Costs:");
-            for (ComparableBoard b : this.priorityQueueList) {
-                System.out.printf("%d ", b.getFCost());
-            }
-            System.out.println("");
+            // System.out.printf("%s", "Available Node Costs:");
+            // for (ComparableBoard b : this.priorityQueueList) {
+            // System.out.printf("%d ", b.getFCost());
+            // }
+            // System.out.println("");
 
             ComparableBoard result = this.priorityQueueList.min();
             this.priorityQueueList.delMin();
@@ -57,7 +59,7 @@ public class Solver {
             this.closedList.add(board.thisBoard.toString());
 
             // TODO Remove after debugging
-            System.out.println("Elements in Closed List: " + this.closedList.size());
+            // System.out.println("Elements in Closed List: " + this.closedList.size());
         }
 
         public boolean closedListContains(ComparableBoard board) {
@@ -167,8 +169,8 @@ public class Solver {
             }
 
             // TODO Remove all debugging
-            System.out.println("Current: \n" + current.thisBoard.toString());
-            System.out.println("Manhattan: " + current.thisBoard.manhattan());
+            // System.out.println("Current: \n" + current.thisBoard.toString());
+            // System.out.println("Manhattan: " + current.thisBoard.manhattan());
 
             ComparableBoard thisNeighbor;
             for (Board b : current.thisBoard.neighbors()) {
@@ -182,7 +184,7 @@ public class Solver {
 
                     // TODO: Remove after debugging
                     // System.out.println("Neighbor closed:\n" + thisNeighbor.thisBoard.toString());
-                    System.out.println("Neighbor closed");
+                    // System.out.println("Neighbor closed");
 
                     continue;
                 }

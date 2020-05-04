@@ -13,9 +13,13 @@ public class TestSolver {
         }
         Board board = new Board(tiles);
         Solver s = new Solver(board);
-        for (Board b : s.solution()) {
-            System.out.println(b.toString());
+        if (!s.isSolvable())
+            System.out.println("No solution possible");
+        else {
+            for (Board b : s.solution()) {
+                System.out.println(b.toString());
+            }
+            System.out.println("Solver required " + s.moves() + " moves.");
         }
-
     }
 }
