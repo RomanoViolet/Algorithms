@@ -1,5 +1,5 @@
 import edu.princeton.cs.algs4.MinPQ;
-import edu.princeton.cs.algs4.SET;
+import edu.princeton.cs.algs4.BinarySearchST;
 import edu.princeton.cs.algs4.Stack;
 
 public class Solver {
@@ -47,13 +47,13 @@ public class Solver {
 
     private class SearchableMinPQ {
         private MinPQ<ComparableBoard> priorityQueueList = new MinPQ<ComparableBoard>();
-        private SET<String> searcheableOpenList = new SET<String>();
-        private SET<String> closedList = new SET<String>();
+        private BinarySearchST<String, Integer> searcheableOpenList = new BinarySearchST<String, Integer>();
+        private BinarySearchST<String, Integer> closedList = new BinarySearchST<String, Integer>();
 
         public void insert(ComparableBoard board) {
             // insert only in the open list
             this.priorityQueueList.insert(board);
-            this.searcheableOpenList.add(board.thisBoard.toString());
+            this.searcheableOpenList.put(board.thisBoard.toString(), 0);
 
         }
 
@@ -78,7 +78,7 @@ public class Solver {
         }
 
         public void addToClosedNodes(ComparableBoard board) {
-            this.closedList.add(board.thisBoard.toString());
+            this.closedList.put(board.thisBoard.toString(), 0);
         }
 
         public boolean closedListContains(ComparableBoard board) {
