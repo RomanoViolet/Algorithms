@@ -247,12 +247,19 @@ public class Board {
 
     // a board that is obtained by exchanging any pair of tiles
     public Board twin() {
-        int[][] newTiles;
+        int[][] newTiles = new int[this.dimension][this.dimension];
         int temp;
+        Board twinBoard;
+
+        // make a copy of the tiles
+        for (int row = 0; row < this.dimension; ++row) {
+            for (int col = 0; col < this.dimension; ++col) {
+                newTiles[row][col] = this.tiles[row][col];
+            }
+        }
         // if the zero is on the left edge
         if (this.locationOfZero.col == 0) {
             // swap tile(0, this.dimension -2) with tile (0, this.dimension -1)
-            newTiles = this.tiles.clone();
             temp = newTiles[0][this.dimension - 2];
             newTiles[0][this.dimension - 2] = newTiles[0][this.dimension - 1];
             newTiles[0][this.dimension - 1] = temp;
@@ -261,7 +268,6 @@ public class Board {
         // if the zero is on the right edge
         else if (this.locationOfZero.col == this.dimension - 1) {
             // swap tile(0, 0) with tile (0, 1)
-            newTiles = this.tiles.clone();
             temp = newTiles[0][1];
             newTiles[0][1] = newTiles[0][0];
             newTiles[0][0] = temp;
@@ -271,13 +277,12 @@ public class Board {
             // swap tile(0, 0) with tile (0, 1)
             // this is the same as in condition above. Will be refactored to avoid code
             // duplication.
-            newTiles = this.tiles.clone();
             temp = newTiles[0][1];
             newTiles[0][1] = newTiles[0][0];
             newTiles[0][0] = temp;
         }
 
-        Board twinBoard = new Board(newTiles);
+        twinBoard = new Board(newTiles);
         return (twinBoard);
 
     }

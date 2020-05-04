@@ -7,6 +7,7 @@ public class Solver {
     private int totalSteps = 0;
     private Board startingBoard;
     private SearchableMinPQ list = new SearchableMinPQ();
+    private SearchableMinPQ twinList = new SearchableMinPQ();
     // private Bag<ComparableBoard> closedList;
     // private SET<ComparableBoard> closedList = new SET<ComparableBoard>();
     private Stack<Board> trace = new Stack<Board>();
@@ -150,14 +151,37 @@ public class Solver {
         // insert the starting board into the openlist
         this.list.insert(startBoard);
 
+        // twin
+        Board twin = this.startingBoard.twin();
+
+        // TODO Remove after debugging
+        System.out.println("Original Board:\n" + this.startingBoard.toString());
+        System.out.println("Twin Board:\n" + twin.toString());
+
+        ComparableBoard twinBoard = new ComparableBoard(twin);
+        twinBoard.updateGCost(0);
+
+        // insert the twin board into the openlist
+        this.twinList.insert(twinBoard);
+
+        boolean solved = false;
+        boolean twinSolved = false;
+        while (!solved && !twinSolved) {
+            solved = solve(this.list);
+            twinSolved = solve(this.twinList);
+        }
+
+    }
+
+    private boolean solve(SearchableMinPQ list) {
         // exploration
-        while (!this.list.isEmpty()) {
+        if (!list.isEmpty()) {
 
             // pick out the cheapest from the open list
-            ComparableBoard current = this.list.extractMin();
+            ComparableBoard current = list.extractMin();
 
             // put the current to closed list
-            this.list.addToClosedNodes(current);
+            list.addToClosedNodes(current);
 
             // check for termination
             if (current.thisBoard.manhattan() == 0) {
@@ -165,7 +189,7 @@ public class Solver {
                 this.solved = true;
                 this.totalSteps = current.getGCost();
                 this.trace = traceAllBoards(current);
-                break;
+                return (true);
             }
 
             // TODO Remove all debugging
@@ -178,7 +202,7 @@ public class Solver {
                 thisNeighbor = new ComparableBoard(b, current.thisBoard);
 
                 // is thisNeighbor in closedList?
-                if (this.list.closedListContains(thisNeighbor)) {
+                if (list.closedListContains(thisNeighbor)) {
                     // skip this neighbor
                     // assume consistent and valid cost function.
 
@@ -196,14 +220,14 @@ public class Solver {
                 // f-cost is updated when updateGCost is called.
 
                 // Is thisNeighbor in the openList already?
-                if (this.list.contains(thisNeighbor) && (thisNeighbor.getGCost() > newGScore)) {
+                if (list.contains(thisNeighbor) && (thisNeighbor.getGCost() > newGScore)) {
                     // Found a cheaper route to this neighbor
                     thisNeighbor.updateGCost(newGScore);
                 } else {
                     // add it to the open list
                     thisNeighbor.updateGCost(newGScore);
                     thisNeighbor.previousBoard = current;
-                    this.list.insert(thisNeighbor);
+                    list.insert(thisNeighbor);
                 }
 
                 // TODO: Remove after debugging
@@ -215,7 +239,7 @@ public class Solver {
 
             }
         }
-
+        return (false);
     }
 
     // is the initial board solvable? (see below)
