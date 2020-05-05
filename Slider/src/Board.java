@@ -135,11 +135,16 @@ public class Board {
         Board that = (Board) y;
 
         boolean areBoardsSame = true;
-        for (int row = 0; row < this.dimension; ++row) {
-            for (int col = 0; col < this.dimension; ++col) {
-                if (this.tiles[row][col] != that.tiles[row][col]) {
-                    areBoardsSame = false;
-                    break;
+
+        if (that.dimension != this.dimension) {
+            areBoardsSame = false;
+        } else {
+            for (int row = 0; row < this.dimension; ++row) {
+                for (int col = 0; col < this.dimension; ++col) {
+                    if (this.tiles[row][col] != that.tiles[row][col]) {
+                        areBoardsSame = false;
+                        break;
+                    }
                 }
             }
         }
@@ -266,11 +271,11 @@ public class Board {
             newTiles[0][this.dimension - 1] = temp;
         } else {
             // zero is not on the left edge.
-            // swap tile(0, 0) with tile (0, 1)
+            // swap tile(0, 0) with tile (1, 0)
             // this is the same as in condition above. Will be refactored to avoid code
             // duplication.
-            temp = newTiles[0][1];
-            newTiles[0][1] = newTiles[0][0];
+            temp = newTiles[1][0];
+            newTiles[1][0] = newTiles[0][0];
             newTiles[0][0] = temp;
         }
 

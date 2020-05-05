@@ -43,6 +43,10 @@ public class Solver {
 
         this.solved = localSolved;
 
+        if (this.solved == false) {
+            this.totalSteps = -1;
+        }
+
     }
 
     private class SearchableMinPQ {
@@ -219,7 +223,12 @@ public class Solver {
 
     // sequence of boards in a shortest solution
     public Iterable<Board> solution() {
-        return (this.trace);
+        if (this.solved) {
+            return (this.trace);
+        } else {
+            return null;
+        }
+
     }
 
     // test client (see below)
