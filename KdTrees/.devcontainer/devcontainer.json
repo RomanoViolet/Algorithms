@@ -1,0 +1,57 @@
+{
+    "name": "Java",
+    "dockerFile": "Dockerfile",
+    "runArgs": [
+        "-u",
+        "dockeruser",
+        "--cap-add=SYS_PTRACE",
+        "--security-opt",
+        "seccomp=unconfined",
+        "--network=host",
+        "-e",
+        "DISPLAY=${env:DISPLAY}",
+        "-v",
+        "/tmp/.X11-unix:/tmp/.X11-unix"
+    ],
+    "settings": {
+        "terminal.integrated.shell.linux": "/bin/bash",
+        "http.proxyStrictSSL": false
+    },
+    "postCreateCommand": [
+        "/bin/bash",
+        "-c",
+        "./Tools/DockerBasedDevelopment/CodeInContainerStartScripts.sh"
+    ],
+    "extensions": [
+        "ankalus.git-tools",
+        "arturock.gitstash",
+        "bibhasdn.git-easy",
+        "bokuweb.vscode-git-grep",
+        "donjayamanne.githistory",
+        "eamodio.gitlens",
+        "howardzuo.vscode-git-tags",
+        "huizhou.githd",
+        "ivangabriele.vscode-git-add-and-commit",
+        "paragdiwan.gitpatch",
+        "samschneller.git-add-remote",
+        "shaharkazaz.git-merger",
+        "waderyan.gitblame",
+        "letmaik.git-tree-compare",
+        "matsken.git-stash-viewer",
+        "byi8220.indented-block-highlighting",
+        "christian-kohler.path-intellisense",
+        "CoenraadS.bracket-pair-colorizer",
+        "Gruntfuggly.todo-tree",
+        "kevinkyang.auto-comment-blocks",
+        "ms-vscode-remote.remote-containers",
+        "NabeelValley.easyzoom",
+        "wengerk.highlight-bad-chars",
+        "ionutvmi.path-autocomplete",
+        "vscjava.vscode-java-debug",
+        "vscjava.vscode-java-pack",
+        "vscjava.vscode-java-dependency",
+        "shengchen.vscode-checkstyle",
+        "redhat.java",
+        "wx-chevalier.google-java-format"
+    ]
+}

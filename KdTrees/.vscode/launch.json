@@ -1,0 +1,27 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - TestSolver",
+            "request": "launch",
+            "mainClass": "TestSolver",
+            "projectName": "Slider",
+            "vmArgs": [
+                "-ea"
+            ],
+            "args": "< ${workspaceFolder}/Tests/3x3Input.txt"
+        },
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - Test",
+            "request": "launch",
+            "mainClass": "Test",
+            "projectName": "Slider",
+            "vmArgs": [
+                "-ea"
+            ],
+            "args": "< ${workspaceFolder}/Tests/3x3Input.txt"
+        }
+    ]
+}

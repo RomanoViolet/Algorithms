@@ -9,9 +9,9 @@ public class Board {
     private final int hammingDistance;
     private Bag<Board> neighboringBoards;
     private TileCoordinates locationOfZero; // the empty space in the puzzle
-
     // create a board from an n-by-n array of tiles,
     // where tiles[row][col] = tile at (row, col)
+
     public Board(int[][] tiles) {
         if (tiles == null) {
             throw new IllegalArgumentException("Board is not initialized properly.");
