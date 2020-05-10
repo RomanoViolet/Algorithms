@@ -3,21 +3,17 @@
     "configurations": [
         {
             "type": "java",
-            "name": "CodeLens (Launch) - TestSolver",
+            "name": "CodeLens (Launch) - KdTreeTest",
             "request": "launch",
-            "mainClass": "TestSolver",
-            "projectName": "Slider",
-            "vmArgs": [
-                "-ea"
-            ],
-            "args": "< ${workspaceFolder}/Tests/3x3Input.txt"
+            "mainClass": "KdTreeTest",
+            "projectName": "KdTrees"
         },
         {
             "type": "java",
-            "name": "CodeLens (Launch) - Test",
+            "name": "CodeLens (Launch) - KdTree",
             "request": "launch",
-            "mainClass": "Test",
-            "projectName": "Slider",
+            "mainClass": "KdTree",
+            "projectName": "KdTrees",
             "vmArgs": [
                 "-ea"
             ],
