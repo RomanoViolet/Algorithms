@@ -1,7 +1,7 @@
 import edu.princeton.cs.algs4.Point2D;
 import edu.princeton.cs.algs4.RectHV;
-import edu.princeton.cs.algs4.SET;
 import edu.princeton.cs.algs4.StdDraw;
+import edu.princeton.cs.algs4.Queue;
 
 public class KdTree {
 
@@ -176,23 +176,27 @@ public class KdTree {
         if (rect == null) {
             throw new IllegalArgumentException("A rectangle needs to be supplied as an argument");
         }
-        SET<Point2D> s = new SET<Point2D>();
-        this.collectPoints(this.root, s, rect);
+        Queue<Point2D> result = new Queue<Point2D>();
+        this.collectPoints(this.root, result, rect);
 
-        return (s);
+        return (result);
     }
 
-    private void collectPoints(Node node, SET<Point2D> s, RectHV rect) {
+    private void collectPoints(Node node, Queue<Point2D> result, RectHV rect) {
         if (node == null) {
             return;
         }
-        if (node.rect.intersects(rect)) {
+        if (rect.contains(node.p)) {
+            result.enqueue(node.p);
+        }
+
+        // if the query rectangle does not intersect the rectangle corresponding to a
+        // node, there is no need to explore that node (or its subtrees). A subtree is
+        // searched only if it might contain a point contained in the query rectangle.
+        if (rect.intersects(node.rect)) {
             // this rectangle may contain points of interest
-            if (rect.contains(node.p)) {
-                s.add(node.p);
-            }
-            this.collectPoints(node.lb, s, rect);
-            this.collectPoints(node.rt, s, rect);
+            this.collectPoints(node.lb, result, rect);
+            this.collectPoints(node.rt, result, rect);
         }
     }
 
@@ -204,45 +208,70 @@ public class KdTree {
         }
 
         this.nearestNeighbor = this.root.p;
-        this.squaredDistanceToNearestNeighbor = this.root.p.distanceSquaredTo(p);
+        this.squaredDistanceToNearestNeighbor = Double.MAX_VALUE;
 
         if (this.root != null) {
-            this.findNearestNeighborInSubTree(this.root, p);
+            this.findNearestNeighborInSubTree(this.root, p, true);
         }
 
         return (this.nearestNeighbor);
     }
 
-    private void findNearestNeighborInSubTree(Node node, Point2D p) {
+    private void findNearestNeighborInSubTree(Node node, Point2D p, boolean evenLevel) {
 
         if (node == null) {
             return;
         }
         double tempDistance;
         // Is it the left subtree to explore first?
-        if (node.lb != null && node.lb.rect.contains(p)) {
+        // if the closest point discovered so far is closer than the distance between
+        // the query point and the rectangle corresponding to a node, there is no need
+        // to explore that node (or its subtrees).
+        if (node != null && node.rect.distanceSquaredTo(p) < this.squaredDistanceToNearestNeighbor) {
             // yes
-            tempDistance = node.lb.p.distanceSquaredTo(p);
+            tempDistance = node.p.distanceSquaredTo(p);
             if (tempDistance < this.squaredDistanceToNearestNeighbor) {
-                this.nearestNeighbor = node.lb.p;
+                this.nearestNeighbor = node.p;
                 this.squaredDistanceToNearestNeighbor = tempDistance;
+            }
+            // when there are two possible subtrees to go down, you always choose the
+            // subtree that is on the same side of the splitting line as the query point as
+            // the first subtree to explore: the closest point found while exploring the
+            // first subtree may enable pruning of the second subtree.
+            // we have left and right or top and bottom splits (or lines)
+            if (evenLevel) {
+                // partioning of the rectange is left-right
+                // is p closer to points in the left subtree?
+                if (p.x() <= node.p.x()) {
+                    // explore left subtree preferentially
+                    this.findNearestNeighborInSubTree(node.lb, p, !evenLevel);
+                    // and then the right subtree
+                    this.findNearestNeighborInSubTree(node.rt, p, !evenLevel);
 
-                // explore left part of the subtree to refine the estimate
-                if (node.lb != null) {
-                    this.findNearestNeighborInSubTree(node.lb, p);
+                } else {
+                    // explore right subtree preferentially
+                    this.findNearestNeighborInSubTree(node.rt, p, !evenLevel);
+                    // and then, the left subtree
+                    this.findNearestNeighborInSubTree(node.lb, p, !evenLevel);
                 }
             }
-        } else if (node.rt != null) {
-            // right subtree
-            tempDistance = node.rt.p.distanceSquaredTo(p);
-            if (tempDistance < this.squaredDistanceToNearestNeighbor) {
-                this.nearestNeighbor = node.rt.p;
-                this.squaredDistanceToNearestNeighbor = tempDistance;
-                // explore right part of the subtree to refine the estimate
-                if (node.rt != null) {
-                    this.findNearestNeighborInSubTree(node.rt, p);
+
+            if (!evenLevel) {
+                // partioning of the rectange is top-bottom
+                // is p closer to points in the bottom subtree?
+                if (p.y() <= node.p.y()) {
+                    // explore left subtree preferentially
+                    this.findNearestNeighborInSubTree(node.lb, p, !evenLevel);
+                    // and then the right subtree
+                    this.findNearestNeighborInSubTree(node.rt, p, !evenLevel);
+                } else {
+                    // explore right subtree preferentially
+                    this.findNearestNeighborInSubTree(node.rt, p, !evenLevel);
+                    // and then, the left subtree
+                    this.findNearestNeighborInSubTree(node.lb, p, !evenLevel);
                 }
             }
+
         }
 
     }
