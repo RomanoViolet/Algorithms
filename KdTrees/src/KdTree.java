@@ -1,3 +1,5 @@
+import javax.lang.model.util.ElementScanner6;
+
 import edu.princeton.cs.algs4.Point2D;
 import edu.princeton.cs.algs4.RectHV;
 import edu.princeton.cs.algs4.SET;
@@ -7,7 +9,8 @@ public class KdTree {
 
     private Node root = null;
     private int size;
-
+    private Point2D nearestNeighbor;
+    private double squaredDistanceToNearestNeighbor;
     private final int XMIN = 0;
     private final int XMAX = 1;
     private final int YMIN = 0;
@@ -201,9 +204,51 @@ public class KdTree {
         if (p == null) {
             throw new IllegalArgumentException("A point needs to be supplied as an argument");
         }
-        Point2D nearestNeighbor = null;
 
-        return (nearestNeighbor);
+        this.nearestNeighbor = this.root.p;
+        this.squaredDistanceToNearestNeighbor = this.root.p.distanceSquaredTo(p);
+
+        if (this.root != null) {
+            this.findNearestNeighborInSubTree(this.root, p);
+        }
+
+        return (this.nearestNeighbor);
+    }
+
+    private void findNearestNeighborInSubTree(Node node, Point2D p) {
+
+        if (node == null) {
+            return;
+        }
+        double tempDistance;
+        // Is it the left subtree to explore first?
+        if (node.lb != null && node.lb.rect.contains(p)) {
+            // yes
+            tempDistance = node.lb.p.distanceSquaredTo(p);
+            if (tempDistance < this.squaredDistanceToNearestNeighbor) {
+                this.nearestNeighbor = node.lb.p;
+                this.squaredDistanceToNearestNeighbor = tempDistance;
+
+                // explore left part of the subtree to refine the estimate
+                if (node.lb != null) {
+                    this.findNearestNeighborInSubTree(node.lb, p);
+                }
+            }
+        } else if (node.rt != null) {
+            // right subtree
+            tempDistance = node.rt.p.distanceSquaredTo(p);
+            if (tempDistance < this.squaredDistanceToNearestNeighbor) {
+                this.nearestNeighbor = node.rt.p;
+                this.squaredDistanceToNearestNeighbor = tempDistance;
+                // explore right part of the subtree to refine the estimate
+                if (node.rt != null) {
+                    this.findNearestNeighborInSubTree(node.rt, p);
+                }
+            }
+        } else {
+            // do nothing
+        }
+
     }
 
     // unit testing of the methods (optional)
