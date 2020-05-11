@@ -50,7 +50,7 @@ public class KdTree {
             throw new IllegalArgumentException("A point needs to be supplied as an argument");
         }
 
-        this.root = insert(this.root, p, new RectHV(XMIN, YMIN, XMAX, YMAX), true);
+        this.root = insert(this.root, p, XMIN, YMIN, XMAX, YMAX, true);
 
     }
 
@@ -62,10 +62,11 @@ public class KdTree {
         return newNode;
     }
 
-    private Node insert(Node node, Point2D p, RectHV rectangle, boolean evenLevel) {
+    // @note rectangle = RectHV(xmin, ymin, xmax, ymax)
+    private Node insert(Node node, Point2D p, double xmin, double ymin, double xmax, double ymax, boolean evenLevel) {
         // Insert when you reach an empty location
         if (node == null) {
-            return insertNewNode(p, rectangle);
+            return insertNewNode(p, new RectHV(xmin, ymin, xmax, ymax));
         }
 
         // If the point already exists, just return
@@ -80,21 +81,24 @@ public class KdTree {
                 // for insertion.
                 // Object creation is expensive, so we will create RectHV object at the time of
                 // insertion.
-                node.lb = insert(node.lb, p,
-                        new RectHV(rectangle.xmin(), rectangle.ymin(), node.p.x(), rectangle.ymax()), !evenLevel);
+                // old:
+                // node.lb = insert(
+                // node.lb,
+                // p,
+                // new RectHV(rectangle.xmin(), rectangle.ymin(), node.p.x(), rectangle.ymax()),
+                // !evenLevel
+                // );
+                node.lb = insert(node.lb, p, xmin, ymin, node.p.x(), ymax, !evenLevel);
             else
-                node.rt = insert(node.rt, p,
-                        new RectHV(node.p.x(), rectangle.ymin(), rectangle.xmax(), rectangle.ymax()), !evenLevel);
+                node.rt = insert(node.rt, p, node.p.x(), ymin, xmax, ymax, !evenLevel);
         }
         // The current node is horizontal: compare y-coordinates
         else {
 
             if (p.y() <= node.p.y())
-                node.lb = insert(node.lb, p,
-                        new RectHV(rectangle.xmin(), rectangle.ymin(), rectangle.xmax(), node.p.y()), !evenLevel);
+                node.lb = insert(node.lb, p, xmin, ymin, xmax, node.p.y(), !evenLevel);
             else
-                node.rt = insert(node.rt, p,
-                        new RectHV(rectangle.xmin(), node.p.y(), rectangle.xmax(), rectangle.ymax()), !evenLevel);
+                node.rt = insert(node.rt, p, xmin, node.p.y(), xmax, ymax, !evenLevel);
         }
         return node;
     }
