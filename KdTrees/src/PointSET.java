@@ -83,6 +83,6 @@ public class PointSET {
 
     // unit testing of the methods (optional)
     public static void main(String[] args) {
-
+        // intentionally empty
     }
 }

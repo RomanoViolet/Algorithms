@@ -6,7 +6,10 @@
             "name": "CodeLens (Launch) - KdTreeTest",
             "request": "launch",
             "mainClass": "KdTreeTest",
-            "projectName": "KdTrees"
+            "projectName": "KdTrees",
+            "vmArgs": [
+                "-ea"
+            ],
         },
         {
             "type": "java",
@@ -17,7 +20,7 @@
             "vmArgs": [
                 "-ea"
             ],
-            "args": "< ${workspaceFolder}/Tests/3x3Input.txt"
+            "args": ""
         }
     ]
 }

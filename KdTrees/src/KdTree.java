@@ -1,5 +1,3 @@
-import javax.lang.model.util.ElementScanner6;
-
 import edu.princeton.cs.algs4.Point2D;
 import edu.princeton.cs.algs4.RectHV;
 import edu.princeton.cs.algs4.SET;
@@ -7,14 +5,14 @@ import edu.princeton.cs.algs4.StdDraw;
 
 public class KdTree {
 
+    private static final int XMIN = 0;
+    private static final int XMAX = 1;
+    private static final int YMIN = 0;
+    private static final int YMAX = 1;
     private Node root = null;
     private int size;
     private Point2D nearestNeighbor;
     private double squaredDistanceToNearestNeighbor;
-    private final int XMIN = 0;
-    private final int XMAX = 1;
-    private final int YMIN = 0;
-    private final int YMAX = 1;
 
     private class Node {
         // the point
@@ -57,7 +55,7 @@ public class KdTree {
 
     }
 
-    private Node insertNewNode(Node root, Point2D p, RectHV rectangle) {
+    private Node insertNewNode(Point2D p, RectHV rectangle) {
         Node newNode = new Node();
         newNode.lb = null;
         newNode.rt = null;
@@ -93,39 +91,39 @@ public class KdTree {
         return (new RectHV(parentPoint.x(), parentRectange.ymin(), parentRectange.xmax(), parentRectange.ymax()));
     }
 
-    private Node insert(Node root, Point2D p, boolean evenLevel, RectHV rectangle) {
+    private Node insert(Node node, Point2D p, boolean evenLevel, RectHV rectangle) {
         // if the node is empty
-        if (root == null) {
-            return (this.insertNewNode(root, p, rectangle));
+        if (node == null) {
+            return (this.insertNewNode(p, rectangle));
         }
 
         // Is thie even level? 0, 2, 4, ...?
         if (evenLevel) {
-            if (root.p.compareTo(p) == 0) {
-                return root;
+            if (node.p.compareTo(p) == 0) {
+                return node;
             }
 
             // parent rectangle is split top/bottom
-            if (p.x() < root.p.x()) {
-                root.lb = insert(root.lb, p, !evenLevel, getLeftSplitOfParentRectangle(root.rect, root.p));
+            if (p.x() < node.p.x()) {
+                node.lb = insert(node.lb, p, !evenLevel, getLeftSplitOfParentRectangle(node.rect, node.p));
             } else {
-                root.rt = insert(root.rt, p, !evenLevel, getRightSplitOfParentRectangle(root.rect, root.p));
+                node.rt = insert(node.rt, p, !evenLevel, getRightSplitOfParentRectangle(node.rect, node.p));
             }
         }
 
         if (!evenLevel) {
-            if (root.p.compareTo(p) == 0) {
-                return root;
+            if (node.p.compareTo(p) == 0) {
+                return node;
             }
             // parent rectangle is split left/right
-            if (p.y() < root.p.y()) {
-                root.lb = insert(root.lb, p, evenLevel, getBottomSplitOfParentRectangle(root.rect, root.p));
+            if (p.y() < node.p.y()) {
+                node.lb = insert(node.lb, p, evenLevel, getBottomSplitOfParentRectangle(node.rect, node.p));
             } else {
-                root.rt = insert(root.rt, p, evenLevel, getTopSplitOfParentRectangle(root.rect, root.p));
+                node.rt = insert(node.rt, p, evenLevel, getTopSplitOfParentRectangle(node.rect, node.p));
             }
         }
 
-        return root;
+        return node;
 
     }
 
@@ -134,7 +132,7 @@ public class KdTree {
         if (p == null) {
             throw new IllegalArgumentException("A point needs to be supplied as an argument");
         }
-        return (false);
+        return (this.nearest(p).compareTo(p) == 0);
     }
 
     // draw all points to standard draw
@@ -184,17 +182,17 @@ public class KdTree {
         return (s);
     }
 
-    private void collectPoints(Node root, SET<Point2D> s, RectHV rect) {
-        if (root == null) {
+    private void collectPoints(Node node, SET<Point2D> s, RectHV rect) {
+        if (node == null) {
             return;
         }
-        if (root.rect.intersects(rect)) {
+        if (node.rect.intersects(rect)) {
             // this rectangle may contain points of interest
-            if (rect.contains(root.p)) {
-                s.add(root.p);
+            if (rect.contains(node.p)) {
+                s.add(node.p);
             }
-            this.collectPoints(root.lb, s, rect);
-            this.collectPoints(root.rt, s, rect);
+            this.collectPoints(node.lb, s, rect);
+            this.collectPoints(node.rt, s, rect);
         }
     }
 
@@ -245,14 +243,12 @@ public class KdTree {
                     this.findNearestNeighborInSubTree(node.rt, p);
                 }
             }
-        } else {
-            // do nothing
         }
 
     }
 
     // unit testing of the methods (optional)
     public static void main(String[] args) {
-
+        // intentionally left blank
     }
 }
