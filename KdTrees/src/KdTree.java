@@ -176,8 +176,23 @@ public class KdTree {
             throw new IllegalArgumentException("A rectangle needs to be supplied as an argument");
         }
         SET<Point2D> s = new SET<Point2D>();
+        this.collectPoints(this.root, s, rect);
 
         return (s);
+    }
+
+    private void collectPoints(Node root, SET<Point2D> s, RectHV rect) {
+        if (root == null) {
+            return;
+        }
+        if (root.rect.intersects(rect)) {
+            // this rectangle may contain points of interest
+            if (rect.contains(root.p)) {
+                s.add(root.p);
+            }
+            this.collectPoints(root.lb, s, rect);
+            this.collectPoints(root.rt, s, rect);
+        }
     }
 
     // a nearest neighbor in the set to point p; null if the set is empty
