@@ -12,7 +12,6 @@ public class KdTree {
     private Node root = null;
     private int size;
     private Point2D nearestNeighbor;
-    private double squaredDistanceToNearestNeighbor;
 
     private class Node {
         // the point
@@ -22,10 +21,10 @@ public class KdTree {
         private RectHV rect;
 
         // the left/bottom subtree
-        private Node lb;
+        private Node lb = null;
 
         // the right/top subtree
-        private Node rt;
+        private Node rt = null;
     }
 
     // construct an empty set of points
@@ -51,80 +50,53 @@ public class KdTree {
             throw new IllegalArgumentException("A point needs to be supplied as an argument");
         }
 
-        this.root = insert(this.root, p, true, new RectHV(XMIN, YMIN, XMAX, YMAX));
+        this.root = insert(this.root, p, new RectHV(XMIN, YMIN, XMAX, YMAX), true);
 
     }
 
     private Node insertNewNode(Point2D p, RectHV rectangle) {
         Node newNode = new Node();
-        newNode.lb = null;
-        newNode.rt = null;
         newNode.rect = rectangle;
         newNode.p = p;
         this.size++;
         return newNode;
     }
 
-    private RectHV getBottomSplitOfParentRectangle(RectHV parentRectange, Point2D parentPoint) {
-        // split parentRectangle into top and bottom parts.
-        // return the bottom part. Boundary determined by the y-coordinate of the
-        // parent.
-        return (new RectHV(parentRectange.xmin(), parentRectange.ymin(), parentRectange.xmax(), parentPoint.y()));
-    }
-
-    private RectHV getTopSplitOfParentRectangle(RectHV parentRectange, Point2D parentPoint) {
-        // split parentRectangle into top and bottom parts.
-        // return the top part. Boundary determined by the y-coordinate of the parent.
-        return (new RectHV(parentRectange.xmin(), parentPoint.y(), parentRectange.xmax(), parentRectange.ymax()));
-    }
-
-    private RectHV getLeftSplitOfParentRectangle(RectHV parentRectange, Point2D parentPoint) {
-        // split parentRectangle into left and right parts. Right boundary determined by
-        // the x-coordinate of the parent.
-
-        return (new RectHV(parentRectange.xmin(), parentRectange.ymin(), parentPoint.x(), parentRectange.ymax()));
-    }
-
-    private RectHV getRightSplitOfParentRectangle(RectHV parentRectange, Point2D parentPoint) {
-        // split parentRectangle into left and right parts. Left boundary determined by
-        // the x-coordinate of the parent.
-        return (new RectHV(parentPoint.x(), parentRectange.ymin(), parentRectange.xmax(), parentRectange.ymax()));
-    }
-
-    private Node insert(Node node, Point2D p, boolean evenLevel, RectHV rectangle) {
-        // if the node is empty
+    private Node insert(Node node, Point2D p, RectHV rectangle, boolean evenLevel) {
+        // Insert when you reach an empty location
         if (node == null) {
-            return (this.insertNewNode(p, rectangle));
+            return insertNewNode(p, rectangle);
         }
 
-        // Is thie even level? 0, 2, 4, ...?
+        // If the point already exists, just return
+        else if (node.p.equals(p)) {
+            return node;
+        }
+
         if (evenLevel) {
-            if (node.p.compareTo(p) == 0) {
-                return node;
-            }
 
-            // parent rectangle is split top/bottom
-            if (p.x() < node.p.x()) {
-                node.lb = insert(node.lb, p, !evenLevel, getLeftSplitOfParentRectangle(node.rect, node.p));
-            } else {
-                node.rt = insert(node.rt, p, !evenLevel, getRightSplitOfParentRectangle(node.rect, node.p));
-            }
+            if (p.x() <= node.p.x())
+                // grader complains about creating RectHV on the stack when it may notbe used
+                // for insertion.
+                // Object creation is expensive, so we will create RectHV object at the time of
+                // insertion.
+                node.lb = insert(node.lb, p,
+                        new RectHV(rectangle.xmin(), rectangle.ymin(), node.p.x(), rectangle.ymax()), !evenLevel);
+            else
+                node.rt = insert(node.rt, p,
+                        new RectHV(node.p.x(), rectangle.ymin(), rectangle.xmax(), rectangle.ymax()), !evenLevel);
         }
+        // The current node is horizontal: compare y-coordinates
+        else {
 
-        if (!evenLevel) {
-            if (node.p.compareTo(p) == 0) {
-                return node;
-            }
-            // parent rectangle is split left/right
-            if (p.y() < node.p.y()) {
-                node.lb = insert(node.lb, p, evenLevel, getBottomSplitOfParentRectangle(node.rect, node.p));
-            } else {
-                node.rt = insert(node.rt, p, evenLevel, getTopSplitOfParentRectangle(node.rect, node.p));
-            }
+            if (p.y() <= node.p.y())
+                node.lb = insert(node.lb, p,
+                        new RectHV(rectangle.xmin(), rectangle.ymin(), rectangle.xmax(), node.p.y()), !evenLevel);
+            else
+                node.rt = insert(node.rt, p,
+                        new RectHV(rectangle.xmin(), node.p.y(), rectangle.xmax(), rectangle.ymax()), !evenLevel);
         }
-
         return node;
-
     }
 
     // does the set contain point p?
@@ -132,7 +104,13 @@ public class KdTree {
         if (p == null) {
             throw new IllegalArgumentException("A point needs to be supplied as an argument");
         }
-        return (this.nearest(p).compareTo(p) == 0);
+
+        if (this.nearest(p) == null) {
+            return (false);
+        } else {
+            return (this.nearest(p).equals(p));
+        }
+
     }
 
     // draw all points to standard draw
@@ -171,50 +149,56 @@ public class KdTree {
 
     }
 
-    // all points that are inside the rectangle (or on the boundary)
     public Iterable<Point2D> range(RectHV rect) {
         if (rect == null) {
             throw new IllegalArgumentException("A rectangle needs to be supplied as an argument");
         }
-        Queue<Point2D> result = new Queue<Point2D>();
-        this.collectPoints(this.root, result, rect);
 
-        return (result);
+        Queue<Point2D> allPoints = new Queue<Point2D>();
+        this.collectPoints(root, rect, allPoints);
+
+        return allPoints;
     }
 
-    private void collectPoints(Node node, Queue<Point2D> result, RectHV rect) {
+    private void collectPoints(Node node, RectHV queryRectangle, Queue<Point2D> allPoints) {
         if (node == null) {
             return;
         }
-        if (rect.contains(node.p)) {
-            result.enqueue(node.p);
-        }
 
         // if the query rectangle does not intersect the rectangle corresponding to a
-        // node, there is no need to explore that node (or its subtrees). A subtree is
-        // searched only if it might contain a point contained in the query rectangle.
-        if (rect.intersects(node.rect)) {
-            // this rectangle may contain points of interest
-            this.collectPoints(node.lb, result, rect);
-            this.collectPoints(node.rt, result, rect);
+        // node, there is no need to explore that node (or its subtrees).
+        if (queryRectangle.intersects(node.rect)) {
+            if (queryRectangle.contains(node.p)) {
+                allPoints.enqueue(node.p);
+            }
+            // A subtree is searched only if it might contain a point contained in the query
+            // rectangle.
+            if (node.lb != null && node.lb.rect.intersects(queryRectangle)) {
+                collectPoints(node.lb, queryRectangle, allPoints);
+            }
+
+            if (node.rt != null && node.rt.rect.intersects(queryRectangle)) {
+                collectPoints(node.rt, queryRectangle, allPoints);
+            }
+
         }
     }
 
-    // a nearest neighbor in the set to point p; null if the set is empty
-    // Cost: Linear in the size of this.points
+    /**
+     * @return a nearest neighbor in the set to point p; null if the set is empty
+     */
     public Point2D nearest(Point2D p) {
         if (p == null) {
             throw new IllegalArgumentException("A point needs to be supplied as an argument");
         }
 
-        this.nearestNeighbor = this.root.p;
-        this.squaredDistanceToNearestNeighbor = Double.MAX_VALUE;
-
-        if (this.root != null) {
-            this.findNearestNeighborInSubTree(this.root, p, true);
+        if (this.isEmpty()) {
+            return null;
+        } else {
+            this.nearestNeighbor = this.root.p;
+            this.findNearestNeighborInSubTree(root, p, true);
+            return this.nearestNeighbor;
         }
-
-        return (this.nearestNeighbor);
     }
 
     private void findNearestNeighborInSubTree(Node node, Point2D p, boolean evenLevel) {
@@ -222,54 +206,39 @@ public class KdTree {
         if (node == null) {
             return;
         }
-        double tempDistance;
-        // Is it the left subtree to explore first?
+
+        double closestDistance = this.nearestNeighbor.distanceSquaredTo(p);
+
         // if the closest point discovered so far is closer than the distance between
         // the query point and the rectangle corresponding to a node, there is no need
-        // to explore that node (or its subtrees).
-        if (node != null && node.rect.distanceSquaredTo(p) < this.squaredDistanceToNearestNeighbor) {
-            // yes
-            tempDistance = node.p.distanceSquaredTo(p);
-            if (tempDistance < this.squaredDistanceToNearestNeighbor) {
+        // to explore that node (or its subtrees)
+        if (closestDistance > node.rect.distanceSquaredTo(p)) {
+            // explore this node
+            if (closestDistance > p.distanceSquaredTo(node.p)) {
                 this.nearestNeighbor = node.p;
-                this.squaredDistanceToNearestNeighbor = tempDistance;
             }
+
+            // explore node's subtrees
             // when there are two possible subtrees to go down, you always choose the
             // subtree that is on the same side of the splitting line as the query point as
-            // the first subtree to explore: the closest point found while exploring the
+            // the *first* subtree to explore (and then explore the second subtree): the
+            // closest point found while exploring the
             // first subtree may enable pruning of the second subtree.
             // we have left and right or top and bottom splits (or lines)
-            if (evenLevel) {
-                // partioning of the rectange is left-right
-                // is p closer to points in the left subtree?
-                if (p.x() <= node.p.x()) {
-                    // explore left subtree preferentially
-                    this.findNearestNeighborInSubTree(node.lb, p, !evenLevel);
-                    // and then the right subtree
-                    this.findNearestNeighborInSubTree(node.rt, p, !evenLevel);
+            // prioritizing order to exploration saves compute time associated to
+            // p.distanceSquaredTo(node.p) in lines above.
+            if ((evenLevel && (p.x() <= node.p.x())) || (!evenLevel && (p.y() <= node.p.y()))) {
+                // ... query point as the *first* subtree to explore
+                this.findNearestNeighborInSubTree(node.lb, p, !evenLevel);
 
-                } else {
-                    // explore right subtree preferentially
-                    this.findNearestNeighborInSubTree(node.rt, p, !evenLevel);
-                    // and then, the left subtree
-                    this.findNearestNeighborInSubTree(node.lb, p, !evenLevel);
-                }
-            }
+                // ... and then explore the second subtree
+                this.findNearestNeighborInSubTree(node.rt, p, !evenLevel);
+            } else {
+                // ... query point as the *first* subtree to explore
+                this.findNearestNeighborInSubTree(node.rt, p, !evenLevel);
 
-            if (!evenLevel) {
-                // partioning of the rectange is top-bottom
-                // is p closer to points in the bottom subtree?
-                if (p.y() <= node.p.y()) {
-                    // explore left subtree preferentially
-                    this.findNearestNeighborInSubTree(node.lb, p, !evenLevel);
-                    // and then the right subtree
-                    this.findNearestNeighborInSubTree(node.rt, p, !evenLevel);
-                } else {
-                    // explore right subtree preferentially
-                    this.findNearestNeighborInSubTree(node.rt, p, !evenLevel);
-                    // and then, the left subtree
-                    this.findNearestNeighborInSubTree(node.lb, p, !evenLevel);
-                }
+                // ... and then explore the second subtree
+                this.findNearestNeighborInSubTree(node.lb, p, !evenLevel);
             }
 
         }
