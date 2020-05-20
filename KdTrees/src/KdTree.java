@@ -12,6 +12,12 @@ public class KdTree {
     private Node root = null;
     private int size;
     private Point2D nearestNeighbor;
+    private boolean foundAPoint = false;
+
+    // used to decide the action when travelling the tree.
+    private enum Action {
+        QUERY, INSERT
+    }
 
     private class Node {
         // the point
@@ -50,7 +56,13 @@ public class KdTree {
             throw new IllegalArgumentException("A point needs to be supplied as an argument");
         }
 
-        this.root = insert(this.root, p, XMIN, YMIN, XMAX, YMAX, true);
+        // Initial rectangle is the entire possible universe.
+        // This is the rectangle associated to the first point inserted in the tree.
+        // The first point divides the available rectange for *its* children.
+        // @note If XMIN, ... parameters are not null, then insertion will be done.
+        // @note If XMIN, ... parameters are null, a boolean will be returned indicating
+        // whether the point p is present in the tree or not.
+        this.root = travelTree(this.root, p, true, XMIN, YMIN, XMAX, YMAX, Action.INSERT);
 
     }
 
@@ -63,14 +75,34 @@ public class KdTree {
     }
 
     // @note rectangle = RectHV(xmin, ymin, xmax, ymax)
-    private Node insert(Node node, Point2D p, double xmin, double ymin, double xmax, double ymax, boolean evenLevel) {
-        // Insert when you reach an empty location
-        if (node == null) {
+    // @param node: the root of the tree at which the search for the location of new
+    // point p will start. This node is populated already.
+    // @param p: point to be inserted.
+    // @note insertion will be done only if xmin,... are not null.
+    // @note if xmin,... are null, a boolean will be returned indicating whether p
+    // is present in the tree or not.
+    // ...
+    private Node travelTree(Node node, Point2D p, boolean evenLevel, double xmin, double ymin, double xmax, double ymax,
+            Action action) {
+        // Insert on reaching an empty location
+        if (node == null && action == Action.INSERT) {
             return insertNewNode(p, new RectHV(xmin, ymin, xmax, ymax));
+        }
+
+        // If xmin is not provided, then this is a search query.
+        // This else-if block can be removed.
+        else if (node == null && action == Action.QUERY) {
+            // The point p does not exist in the tree.
+
+            // the flag was already set to false when the query was dispatched.
+            this.foundAPoint = false;
+            return (null);
         }
 
         // If the point already exists, just return
         else if (node.p.equals(p)) {
+            // update the query status if query was requested.
+            this.foundAPoint = true;
             return node;
         }
 
@@ -88,17 +120,20 @@ public class KdTree {
                 // new RectHV(rectangle.xmin(), rectangle.ymin(), node.p.x(), rectangle.ymax()),
                 // !evenLevel
                 // );
-                node.lb = insert(node.lb, p, xmin, ymin, node.p.x(), ymax, !evenLevel);
+                //
+                // The rectangle for point p will be either left/bottom or right/top split of
+                // the parent rectangle, split at the parent point.
+                node.lb = travelTree(node.lb, p, !evenLevel, xmin, ymin, node.p.x(), ymax, action);
             else
-                node.rt = insert(node.rt, p, node.p.x(), ymin, xmax, ymax, !evenLevel);
+                node.rt = travelTree(node.rt, p, !evenLevel, node.p.x(), ymin, xmax, ymax, action);
         }
-        // The current node is horizontal: compare y-coordinates
+        // Compare y-coordinates
         else {
 
             if (p.y() <= node.p.y())
-                node.lb = insert(node.lb, p, xmin, ymin, xmax, node.p.y(), !evenLevel);
+                node.lb = travelTree(node.lb, p, !evenLevel, xmin, ymin, xmax, node.p.y(), action);
             else
-                node.rt = insert(node.rt, p, xmin, node.p.y(), xmax, ymax, !evenLevel);
+                node.rt = travelTree(node.rt, p, !evenLevel, xmin, node.p.y(), xmax, ymax, action);
         }
         return node;
     }
@@ -112,7 +147,12 @@ public class KdTree {
         if (this.nearest(p) == null) {
             return (false);
         } else {
-            return (this.nearest(p).equals(p));
+            // if the travelTree returns null, then the point is not present.
+            // xmin, ... is not used if Action.QUERY is passed.
+            // reset the result variable
+            this.foundAPoint = false;
+            this.travelTree(this.root, p, true, 0, 0, 0, 0, Action.QUERY);
+            return (this.foundAPoint);
         }
 
     }
