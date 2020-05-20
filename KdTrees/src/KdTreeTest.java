@@ -11,7 +11,7 @@ import edu.princeton.cs.algs4.StdRandom;
 public class KdTreeTest {
     public static void main(String[] args) {
         KdTree t = new KdTree();
-
+        assert t.contains(new Point2D(0.6, 0.4)) == false : "Insertion failed";
         // for (int i = 0; i < 1000000; i++) {
         // double x = StdRandom.uniform(0.0, 1.0);
         // double y = StdRandom.uniform(0.0, 1.0);

@@ -144,16 +144,11 @@ public class KdTree {
             throw new IllegalArgumentException("A point needs to be supplied as an argument");
         }
 
-        if (this.nearest(p) == null) {
-            return (false);
-        } else {
-            // if the travelTree returns null, then the point is not present.
-            // xmin, ... is not used if Action.QUERY is passed.
-            // reset the result variable
-            this.foundAPoint = false;
-            this.travelTree(this.root, p, true, 0, 0, 0, 0, Action.QUERY);
-            return (this.foundAPoint);
-        }
+        this.foundAPoint = false;
+
+        // xmin, ... are optional when Action.QUERY is passed.
+        this.travelTree(this.root, p, true, 0, 0, 0, 0, Action.QUERY);
+        return (this.foundAPoint);
 
     }
 
